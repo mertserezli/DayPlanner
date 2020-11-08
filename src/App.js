@@ -64,22 +64,50 @@ function DayPlanner() {
     <>
         <div style={{display: "flex", flexDirection: "column"}}>
             <main style={{grow: 1, display: "flex", flexDirection: "row"}}>
-                <aside style={{width: "20%"}}>
-                    {/*<Calendar/>*/}
+                <aside style={{width: "35%"}}>
+                    <SignOut/>
+                    <Calendar/>
                 </aside>
                 <article style={{flexGrow: "1"}}>
-                    {/*<TodoList/>*/}
+                    <TodoList/>
                 </article>
-                <nav style={{width: "25%"}}>
-                    <SignOut/>
-                    {/*<AddTodo/>*/}
-                </nav>
             </main>
         </div>
     </>
     )
 }
 
+function TodoList() {
+    const query = firestore.collection('Todo');
+    const [TodoItems] = useCollectionData(query,{ idField: 'id' });
 
+    if (TodoItems)
+        TodoItems.sort((a,b)=> b.Value / b.Time - a.Value / a.Time);
+
+    return(
+        <>
+            <table>
+                <thead>
+                <tr>
+                    <th>To Do</th>
+                    <th>Score</th>
+                    <th>Value</th>
+                    <th>Time</th>
+                </tr>
+                </thead>
+                <tbody>
+                {TodoItems && TodoItems.map(item =>
+                    <tr key={item.id}>
+                        <td>{item.Name}</td>
+                        <td>{item.Value / item.Time}</td>
+                        <td>{item.Value}</td>
+                        <td>{item.Time}</td>
+                    </tr>
+                )}
+                </tbody>
+            </table>
+        </>
+    )
+}
 
 export default App;
