@@ -83,30 +83,74 @@ function TodoList() {
     const [TodoItems] = useCollectionData(query,{ idField: 'id' });
 
     if (TodoItems)
-        TodoItems.sort((a,b)=> b.Value / b.Time - a.Value / a.Time);
+        TodoItems.sort((a,b)=> b.value / b.time - a.balue / a.time);
 
     return(
-        <>
-            <table>
-                <thead>
-                <tr>
-                    <th>To Do</th>
-                    <th>Score</th>
-                    <th>Value</th>
-                    <th>Time</th>
-                </tr>
-                </thead>
-                <tbody>
-                {TodoItems && TodoItems.map(item =>
-                    <tr key={item.id}>
-                        <td>{item.Name}</td>
-                        <td>{item.Value / item.Time}</td>
-                        <td>{item.Value}</td>
-                        <td>{item.Time}</td>
+        <div style={{display: "flex", flexDirection: "row"}}>
+            <div  style={{width: "35%"}}>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>To Do</th>
+                        <th>Score</th>
+                        <th>Value</th>
+                        <th>Time</th>
+                        <th>Delete</th>
                     </tr>
-                )}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    {TodoItems && TodoItems.map(item =>
+                        <tr key={item.id}>
+                            <td>{item.name}</td>
+                            <td>{item.value / item.time}</td>
+                            <td>{item.value}</td>
+                            <td>{item.time}</td>
+                            <td><button>delete</button></td>
+                        </tr>
+                    )}
+                    </tbody>
+                </table>
+                <AddTodo/>
+            </div>
+        </div>
+    )
+}
+
+function AddTodo(){
+    const [title, setTitle] = useState('');
+    const [value, setValue] = useState('');
+    const [time, setTime] = useState('');
+    const [description, setDescription] = useState('');
+
+    const addTodo = async (e) => {
+        e.preventDefault();
+        const query = firestore.collection('Todo');
+
+        await query.add({name:title, value:parseInt(value), time:parseInt(time), description:description});
+
+        setTitle('');
+        setValue('');
+        setTime('');
+        setDescription('');
+    };
+
+    return (
+        <>
+            <form style={{grow: 1, display: "flex", flexDirection: "column", flexWrap: "wrap"}}>
+                <label htmlFor="title"><b>Title</b></label>
+                <input placeholder="Title" name="title" id="title"
+                       value={title} onChange={(e) => setTitle(e.target.value)}/>
+                <label htmlFor="value"><b>Value</b></label>
+                <input placeholder="INTRINSIC Value" type="number" name="value" id="value"
+                       value={value} onChange={(e) => setValue(e.target.value)}/>
+                <label htmlFor="time"><b>Time</b></label>
+                <input placeholder="Time(minutes)" type="number" name="time" id="time"
+                       value={time} onChange={(e) => setTime(e.target.value)}/>
+                <label htmlFor="description"><b>Description</b></label>
+                <textarea placeholder="Description" name="description" id="description"
+                          value={description} onChange={(e) => setDescription(e.target.value)}/>
+                <button type="submit" onClick={addTodo}>Add</button>
+            </form>
         </>
     )
 }
