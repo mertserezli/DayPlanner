@@ -108,6 +108,7 @@ function TodoList() {
                 </table>
                 <AddTodo/>
             </div>
+            <Description/>
         </div>
     )
 }
@@ -148,6 +149,15 @@ function AddTodo(){
                 <button type="submit" onClick={addTodo}>Add</button>
             </form>
         </>
+    )
+}
+
+function Description(props){
+    const initialDesc = props.desc;
+    const [description, setDescription] = useState(initialDesc);
+
+    return(
+        <textarea value={description} onChange={(e) => setDescription(e.target.value)}/>
     )
 }
 
