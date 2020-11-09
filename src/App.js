@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import './App.css';
 
+import Calendar from './Calendar';
 
 import firebase from 'firebase/app';
 import 'firebase/firestore';
@@ -64,11 +65,11 @@ function DayPlanner() {
     <>
         <div style={{display: "flex", flexDirection: "column"}}>
             <main style={{grow: 1, display: "flex", flexDirection: "row"}}>
-                <aside style={{width: "35%"}}>
-                    <SignOut/>
+                <aside style={{width: "35%", display: "flex", justifyContent: "center", alignItems: "center"}}>
                     <Calendar/>
                 </aside>
                 <article style={{flexGrow: "1"}}>
+                    <SignOut/>
                     <TodoList/>
                 </article>
             </main>
