@@ -62,19 +62,15 @@ function SignOut() {
 
 function DayPlanner() {
     return(
-    <>
-        <div style={{display: "flex", flexDirection: "column"}}>
-            <main style={{grow: 1, display: "flex", flexDirection: "row"}}>
-                <aside style={{width: "35%", display: "flex", justifyContent: "center", alignItems: "center"}}>
-                    <Calendar/>
-                </aside>
-                <article style={{flexGrow: "1"}}>
-                    <SignOut/>
-                    <TodoList/>
-                </article>
-            </main>
-        </div>
-    </>
+    <main style={{grow: 1, display: "flex", flexDirection: "row"}}>
+        <aside style={{width: "35%", display: "flex", justifyContent: "center", alignItems: "center"}}>
+            <Calendar/>
+        </aside>
+        <article style={{flexGrow: "1"}}>
+            <SignOut/>
+            <TodoList/>
+        </article>
+    </main>
     )
 }
 
