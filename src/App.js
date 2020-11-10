@@ -63,7 +63,7 @@ function SignOut() {
 function DayPlanner() {
     return(
     <main style={{grow: 1, display: "flex", flexDirection: "row"}}>
-        <aside style={{width: "35%", display: "flex", justifyContent: "center", alignItems: "center"}}>
+        <aside style={{width: "45%", display: "flex", justifyContent: "center", alignItems: "center"}}>
             <Calendar/>
         </aside>
         <article style={{flexGrow: "1"}}>

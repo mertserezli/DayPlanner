@@ -1,14 +1,13 @@
 /* eslint-disable react/destructuring-assignment */
 import * as React from "react";
 import Paper from "@material-ui/core/Paper";
-import { ViewState, EditingState } from "@devexpress/dx-react-scheduler";
+import { EditingState } from "@devexpress/dx-react-scheduler";
 import {
     Scheduler,
     DayView,
     Appointments,
     DragDropProvider,
     EditRecurrenceMenu,
-    AllDayPanel,
     AppointmentTooltip,
     AppointmentForm,
 } from "@devexpress/dx-react-scheduler-material-ui";
