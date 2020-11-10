@@ -81,7 +81,7 @@ function TodoList() {
     const [descriptionState, setDescriptionState] = useState('');
 
     if (TodoItems)
-        TodoItems.sort((a,b)=> b.value / b.time - a.balue / a.time);
+        TodoItems.sort((a,b)=> b.value / b.time - a.value / a.time);
 
     return(
         <div style={{display: "flex", flexDirection: "row"}}>
