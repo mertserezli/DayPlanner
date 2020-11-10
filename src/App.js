@@ -83,10 +83,6 @@ function TodoList() {
     if (TodoItems)
         TodoItems.sort((a,b)=> b.value / b.time - a.value / a.time);
 
-    const removeTodo = async (id)=>{
-        query.doc(id).delete()
-    };
-
     return(
         <div style={{display: "flex", flexDirection: "row", justifyContent:"space-between"}}>
             <div  style={{width: "35%"}}>
@@ -97,18 +93,12 @@ function TodoList() {
                         <th>Score</th>
                         <th>Value</th>
                         <th>Time</th>
-                        <th>Delete</th>
+                        <th>Actions</th>
                     </tr>
                     </thead>
                     <tbody>
                     {TodoItems && TodoItems.map(item =>
-                        <tr key={item.id} onClick={()=>setDescriptionState({description: item.description, id: item.id})}>
-                            <td>{item.name}</td>
-                            <td>{(item.value / item.time).toFixed(1)}</td>
-                            <td>{item.value}</td>
-                            <td>{item.time}</td>
-                            <td><button onClick={()=>removeTodo(item.id)}>delete</button></td>
-                        </tr>
+                        <TodoItem key={item.id} item={item} setDescriptionState={setDescriptionState}/>
                     )}
                     </tbody>
                 </table>
@@ -116,6 +106,52 @@ function TodoList() {
             </div>
             <Description descriptionState={descriptionState} setDescriptionState={setDescriptionState}/>
         </div>
+    )
+}
+
+function TodoItem(props){
+    const item = props.item;
+    const setDescriptionState = props.setDescriptionState;
+
+    const query = firestore.collection('Todo');
+    const [readMode, setReadMode] = useState(true);
+
+    const [title, setTitle] = useState(item.name);
+    const [value, setValue] = useState(item.value);
+    const [time, setTime] = useState(item.time);
+
+    const removeTodo = async (id)=>{
+        query.doc(id).delete()
+    };
+
+    const saveChanges = async () => {
+        query.doc(item.id).update({name:title, value:parseInt(value), time:parseInt(time)});
+        setReadMode(true)
+    };
+
+    return (
+        readMode ?
+        <tr key={item.id} onClick={()=>setDescriptionState({description: item.description, id: item.id})}>
+            <td>{item.name}</td>
+            <td>{(item.value / item.time).toFixed(1)}</td>
+            <td>{item.value}</td>
+            <td>{item.time}</td>
+            <td>
+                <button onClick={()=>setReadMode(false)}>edit</button>
+                <button onClick={()=>removeTodo(item.id)}>delete</button>
+            </td>
+        </tr>
+        :
+        <tr key={item.id} onClick={()=>setDescriptionState({description: item.description, id: item.id})}>
+            <td><input value={title} onChange={(e) => setTitle(e.target.value)}/></td>
+            <td>{(item.value / item.time).toFixed(1)}</td>
+            <td><input type="number" value={value} onChange={(e) => setValue(e.target.value)}/></td>
+            <td><input type="number" value={time} onChange={(e) => setTime(e.target.value)}/></td>
+            <td>
+                <button onClick={()=>saveChanges()}>save</button>
+                <button onClick={()=>removeTodo(item.id)}>delete</button>
+            </td>
+        </tr>
     )
 }
 
