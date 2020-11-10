@@ -100,7 +100,7 @@ function TodoList() {
                     {TodoItems && TodoItems.map(item =>
                         <tr key={item.id} onClick={()=>setDescriptionState({description: item.description, id: item.id})}>
                             <td>{item.name}</td>
-                            <td>{item.value / item.time}</td>
+                            <td>{(item.value / item.time).toFixed(1)}</td>
                             <td>{item.value}</td>
                             <td>{item.time}</td>
                             <td><button>delete</button></td>
