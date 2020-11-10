@@ -63,7 +63,7 @@ function SignOut() {
 function DayPlanner() {
     return(
     <main style={{grow: 1, display: "flex", flexDirection: "row"}}>
-        <aside style={{width: "45%", display: "flex", justifyContent: "center", alignItems: "center"}}>
+        <aside style={{width: "45%", display: "flex", justifyContent: "center"}}>
             <Calendar/>
         </aside>
         <article style={{flexGrow: "1"}}>
@@ -206,7 +206,7 @@ function Description(props){
     };
 
     return(
-        <div style={{display: "flex", flexDirection: "column", justifyContent:"space-between"}}>
+        <div style={{display: "flex", flexDirection: "column"}}>
             <textarea style={{height:"500px", width:"600px"}} value={description} onChange={(e) => setDescriptionState({description: e.target.value, id: curItemId})}/>
             <button type="submit" onClick={()=>save()}>Save</button>
         </div>

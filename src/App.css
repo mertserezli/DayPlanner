@@ -37,6 +37,10 @@
   }
 }
 
+body {
+  background-color: lightgray;
+}
+
 table, th, td {
   border: 1px solid black;
 }
