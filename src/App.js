@@ -78,6 +78,8 @@ function TodoList() {
     const query = firestore.collection('Todo');
     const [TodoItems] = useCollectionData(query,{ idField: 'id' });
 
+    const [descriptionState, setDescriptionState] = useState('');
+
     if (TodoItems)
         TodoItems.sort((a,b)=> b.value / b.time - a.balue / a.time);
 
@@ -96,7 +98,7 @@ function TodoList() {
                     </thead>
                     <tbody>
                     {TodoItems && TodoItems.map(item =>
-                        <tr key={item.id}>
+                        <tr key={item.id} onClick={()=>setDescriptionState({description: item.description, id: item.id})}>
                             <td>{item.name}</td>
                             <td>{item.value / item.time}</td>
                             <td>{item.value}</td>
@@ -108,7 +110,7 @@ function TodoList() {
                 </table>
                 <AddTodo/>
             </div>
-            <Description/>
+            <Description descriptionState={descriptionState} setDescriptionState={setDescriptionState}/>
         </div>
     )
 }
@@ -153,11 +155,21 @@ function AddTodo(){
 }
 
 function Description(props){
-    const initialDesc = props.desc;
-    const [description, setDescription] = useState(initialDesc);
+    const description = props.descriptionState.description;
+    const curItemId = props.descriptionState.id;
+    const setDescriptionState = props.setDescriptionState;
+
+    const query = firestore.collection('Todo');
+
+    const save = async ()=>{
+        query.doc(curItemId).update({description:description})
+    };
 
     return(
-        <textarea value={description} onChange={(e) => setDescription(e.target.value)}/>
+        <div>
+            <textarea value={description} onChange={(e) => setDescriptionState({description: e.target.value, id: curItemId})}/>
+            <button type="submit" onClick={()=>save()}>Save</button>
+        </div>
     )
 }
 
