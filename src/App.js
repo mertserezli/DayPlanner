@@ -88,7 +88,7 @@ function TodoList() {
     };
 
     return(
-        <div style={{display: "flex", flexDirection: "row"}}>
+        <div style={{display: "flex", flexDirection: "row", justifyContent:"space-between"}}>
             <div  style={{width: "35%"}}>
                 <table>
                     <thead>
@@ -170,8 +170,8 @@ function Description(props){
     };
 
     return(
-        <div>
-            <textarea style={{height:"500px", width:"400px"}} value={description} onChange={(e) => setDescriptionState({description: e.target.value, id: curItemId})}/>
+        <div style={{display: "flex", flexDirection: "column", justifyContent:"space-between"}}>
+            <textarea style={{height:"500px", width:"600px"}} value={description} onChange={(e) => setDescriptionState({description: e.target.value, id: curItemId})}/>
             <button type="submit" onClick={()=>save()}>Save</button>
         </div>
     )
