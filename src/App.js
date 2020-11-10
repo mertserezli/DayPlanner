@@ -83,6 +83,10 @@ function TodoList() {
     if (TodoItems)
         TodoItems.sort((a,b)=> b.value / b.time - a.value / a.time);
 
+    const removeTodo = async (id)=>{
+        query.doc(id).delete()
+    };
+
     return(
         <div style={{display: "flex", flexDirection: "row"}}>
             <div  style={{width: "35%"}}>
@@ -103,7 +107,7 @@ function TodoList() {
                             <td>{(item.value / item.time).toFixed(1)}</td>
                             <td>{item.value}</td>
                             <td>{item.time}</td>
-                            <td><button>delete</button></td>
+                            <td><button onClick={()=>removeTodo(item.id)}>delete</button></td>
                         </tr>
                     )}
                     </tbody>
