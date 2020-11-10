@@ -167,7 +167,7 @@ function Description(props){
 
     return(
         <div>
-            <textarea value={description} onChange={(e) => setDescriptionState({description: e.target.value, id: curItemId})}/>
+            <textarea style={{height:"500px", width:"400px"}} value={description} onChange={(e) => setDescriptionState({description: e.target.value, id: curItemId})}/>
             <button type="submit" onClick={()=>save()}>Save</button>
         </div>
     )
