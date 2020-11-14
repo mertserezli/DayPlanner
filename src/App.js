@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import './App.css';
 
 import Calendar from './Calendar';
+import useSortableData from './UseSortableData'
 
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import 'firebase/auth';
-
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 
@@ -80,8 +80,11 @@ function TodoList() {
 
     const [descriptionState, setDescriptionState] = useState('');
 
-    if (TodoItems)
-        TodoItems.sort((a,b)=> b.value / b.time - a.value / a.time);
+    const { items, requestSort, sortConfig } = useSortableData(TodoItems ?
+        TodoItems.map(item => {
+            item.score = item.value / item.time;
+            return item;
+        }): [], {key:"score", direction:"descending"});
 
     return(
         <div style={{display: "flex", flexDirection: "row", justifyContent:"space-between"}}>
@@ -89,15 +92,15 @@ function TodoList() {
                 <table>
                     <thead>
                     <tr>
-                        <th>To Do</th>
-                        <th>Score</th>
-                        <th>Value</th>
-                        <th>Time</th>
+                        <th><button type="button" onClick={() => requestSort('name')}>To Do</button></th>
+                        <th><button type="button" onClick={() => requestSort('score')}>Score</button></th>
+                        <th><button type="button" onClick={() => requestSort('value')}>Value</button></th>
+                        <th><button type="button" onClick={() => requestSort('time')}>Time</button></th>
                         <th>Actions</th>
                     </tr>
                     </thead>
                     <tbody>
-                    {TodoItems && TodoItems.map(item =>
+                    {items && items.map(item =>
                         <TodoItem key={item.id} item={item} setDescriptionState={setDescriptionState}/>
                     )}
                     </tbody>
