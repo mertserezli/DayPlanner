@@ -80,7 +80,7 @@ function TodoList() {
 
     const [descriptionState, setDescriptionState] = useState('');
 
-    const { items, requestSort, sortConfig } = useSortableData(TodoItems ?
+    const { items, requestSort } = useSortableData(TodoItems ?
         TodoItems.map(item => {
             item.score = item.value / item.time;
             return item;
