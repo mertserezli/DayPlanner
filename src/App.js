@@ -92,10 +92,10 @@ function TodoList() {
                 <table>
                     <thead>
                     <tr>
-                        <th><button type="button" onClick={() => requestSort('name')}>To Do</button></th>
-                        <th><button type="button" onClick={() => requestSort('score')}>Score</button></th>
-                        <th><button type="button" onClick={() => requestSort('value')}>Value</button></th>
-                        <th><button type="button" onClick={() => requestSort('time')}>Time</button></th>
+                        <th className={"pointer"} onClick={() => requestSort('name')}>To Do</th>
+                        <th className={"pointer"} onClick={() => requestSort('score')}>Score</th>
+                        <th className={"pointer"} onClick={() => requestSort('value')}>Value</th>
+                        <th className={"pointer"} onClick={() => requestSort('time')}>Time</th>
                         <th>Actions</th>
                     </tr>
                     </thead>
