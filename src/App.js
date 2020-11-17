@@ -9,6 +9,7 @@ import 'firebase/firestore';
 import 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
+import {Modal} from "@material-ui/core";
 
 firebase.initializeApp({
     apiKey: "AIzaSyAR3BhiHFJEAgb-DjNF4UJqKyK3tg-TndI",
@@ -78,8 +79,6 @@ function TodoList() {
     const query = firestore.collection('Todo');
     const [TodoItems] = useCollectionData(query,{ idField: 'id' });
 
-    const [descriptionState, setDescriptionState] = useState('');
-
     const { items, requestSort } = useSortableData(TodoItems ?
         TodoItems.map(item => {
             item.score = item.value / item.time;
@@ -101,20 +100,18 @@ function TodoList() {
                     </thead>
                     <tbody>
                     {items && items.map(item =>
-                        <TodoItem key={item.id} item={item} setDescriptionState={setDescriptionState}/>
+                        <TodoItem key={item.id} item={item}/>
                     )}
                     </tbody>
                 </table>
                 <AddTodo/>
             </div>
-            <Description descriptionState={descriptionState} setDescriptionState={setDescriptionState}/>
         </div>
     )
 }
 
 function TodoItem(props){
     const item = props.item;
-    const setDescriptionState = props.setDescriptionState;
 
     const query = firestore.collection('Todo');
     const [readMode, setReadMode] = useState(true);
@@ -122,6 +119,8 @@ function TodoItem(props){
     const [title, setTitle] = useState(item.name);
     const [value, setValue] = useState(item.value);
     const [time, setTime] = useState(item.time);
+
+    const [open, setOpen] = React.useState(false);
 
     const removeTodo = async (id)=>{
         query.doc(id).delete()
@@ -132,29 +131,43 @@ function TodoItem(props){
         setReadMode(true)
     };
 
-    return (
-        readMode ?
-        <tr key={item.id} onClick={()=>setDescriptionState({description: item.description, id: item.id})}>
-            <td>{item.name}</td>
-            <td>{(item.value / item.time).toFixed(1)}</td>
-            <td>{item.value}</td>
-            <td>{item.time}</td>
-            <td>
-                <button onClick={()=>setReadMode(false)}>edit</button>
-                <button onClick={()=>removeTodo(item.id)}>delete</button>
-            </td>
-        </tr>
-        :
-        <tr key={item.id} onClick={()=>setDescriptionState({description: item.description, id: item.id})}>
-            <td><input value={title} onChange={(e) => setTitle(e.target.value)}/></td>
-            <td>{(item.value / item.time).toFixed(1)}</td>
-            <td><input type="number" value={value} onChange={(e) => setValue(e.target.value)}/></td>
-            <td><input type="number" value={time} onChange={(e) => setTime(e.target.value)}/></td>
-            <td>
-                <button onClick={()=>saveChanges()}>save</button>
-                <button onClick={()=>removeTodo(item.id)}>delete</button>
-            </td>
-        </tr>
+    const handleClose = ()=>{
+        setOpen(false)
+    };
+
+    return (<>
+            {readMode ?
+                <tr key={item.id} onClick={() => setOpen(true)}>
+                    <td>{item.name}</td>
+                    <td>{(item.value / item.time).toFixed(1)}</td>
+                    <td>{item.value}</td>
+                    <td>{item.time}</td>
+                    <td>
+                        <button onClick={() => setReadMode(false)}>edit</button>
+                        <button onClick={() => removeTodo(item.id)}>delete</button>
+                    </td>
+                </tr>
+                :
+                <tr key={item.id}>
+                    <td><input value={title} onChange={(e) => setTitle(e.target.value)}/></td>
+                    <td>{(item.value / item.time).toFixed(1)}</td>
+                    <td><input type="number" value={value} onChange={(e) => setValue(e.target.value)}/></td>
+                    <td><input type="number" value={time} onChange={(e) => setTime(e.target.value)}/></td>
+                    <td>
+                        <button onClick={() => saveChanges()}>save</button>
+                        <button onClick={() => removeTodo(item.id)}>delete</button>
+                    </td>
+                </tr>
+            }
+            <Modal
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="simple-modal-title"
+                aria-describedby="simple-modal-description"
+            >
+                <Description item={item} onClose={handleClose} />
+            </Modal>
+        </>
     )
 }
 
@@ -198,21 +211,21 @@ function AddTodo(){
 }
 
 function Description(props){
-    const description = props.descriptionState.description;
-    const curItemId = props.descriptionState.id;
-    const setDescriptionState = props.setDescriptionState;
+    const item = props.item;
+    const [description, setDescription] = useState(item.description);
 
     const query = firestore.collection('Todo');
 
     const save = async ()=>{
-        query.doc(curItemId).update({description:description})
+        query.doc(item.id).update({description:description})
     };
 
-    return(
-        <div style={{display: "flex", flexDirection: "column"}}>
-            <textarea style={{height:"500px", width:"600px"}} value={description} onChange={(e) => setDescriptionState({description: e.target.value, id: curItemId})}/>
-            <button type="submit" onClick={()=>save()}>Save</button>
-        </div>
+    return(<>
+            <div style={{display: "flex", flexDirection: "column", textAlign:"center", justifyContent: "center", top:"50%", left:"50%", width:"50%", transform:"translate(50%, 15%)", height: "75%"}}>
+                <textarea style={{height:"100%", width:"100%"}} value={description} onChange={(e) => setDescription(e.target.value)}/>
+                <button type="submit" onClick={()=>save()}>Save</button>
+            </div>
+        </>
     )
 }
 
