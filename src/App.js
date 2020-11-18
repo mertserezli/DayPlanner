@@ -62,13 +62,14 @@ function DayPlanner() {
     return(
     <div className={"grid-container"}>
         <div className={"Calendar"}>
+            <SignOut/>
             <Calendar/>
         </div>
         <div className={"Todolist"}>
             <TodoList/>
         </div>
         <div className={"Periodic"}>
-
+            <PeriodicTodoList/>
         </div>
     </div>
     )
@@ -221,6 +222,120 @@ function Description(props){
                 <textarea style={{height:"100%", width:"100%"}} value={description} onChange={(e) => setDescription(e.target.value)}/>
                 <button type="submit" onClick={()=>save()}>Save</button>
             </div>
+        </>
+    )
+}
+
+function PeriodicTodoList() {
+    const query = firestore.collection('PeriodicTodo');
+    const [TodoItems] = useCollectionData(query,{ idField: 'id' });
+
+    return(<>
+            <table>
+                <thead>
+                <tr>
+                    <th>To Do</th>
+                    <th>Period</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {TodoItems && TodoItems.map(item =>
+                    <PeriodicItem key={item.id} item={item}/>
+                )}
+                </tbody>
+            </table>
+            <AddPeriodicTodo/>
+        </>
+    )
+}
+
+function PeriodicItem(props){
+    const item = props.item;
+
+    const query = firestore.collection('TodoPeriodic');
+    const [readMode, setReadMode] = useState(true);
+
+    const [title, setTitle] = useState(item.name);
+    const [period, setPeriod] = useState(item.period);
+
+    const [open, setOpen] = React.useState(false);
+
+    const removeTodo = async (id)=>{
+        query.doc(id).delete()
+    };
+
+    const saveChanges = async () => {
+        query.doc(item.id).update({name:title, period:period});
+        setReadMode(true)
+    };
+
+    const handleClose = ()=>{
+        setOpen(false)
+    };
+
+    return (<>
+            {readMode ?
+                <tr key={item.id} onClick={() => setOpen(true)}>
+                    <td>{item.name}</td>
+                    <td>{item.period}</td>
+                    <td>
+                        <button onClick={() => setReadMode(false)}>edit</button>
+                        <button onClick={() => removeTodo(item.id)}>delete</button>
+                    </td>
+                </tr>
+                :
+                <tr key={item.id}>
+                    <td><input value={title} onChange={(e) => setTitle(e.target.value)}/></td>
+                    <td><input value={period} onChange={(e) => setPeriod(e.target.value)}/></td>
+                    <td>
+                        <button onClick={() => saveChanges()}>save</button>
+                        <button onClick={() => removeTodo(item.id)}>delete</button>
+                    </td>
+                </tr>
+            }
+            <Modal
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="simple-modal-title"
+                aria-describedby="simple-modal-description"
+            >
+                <Description item={item} onClose={handleClose} />
+            </Modal>
+        </>
+    )
+}
+
+function AddPeriodicTodo(){
+    const [title, setTitle] = useState('');
+    const [period, setPeriod] = useState('');
+    const [description, setDescription] = useState('');
+
+    const addTodo = async (e) => {
+        e.preventDefault();
+        const query = firestore.collection('PeriodicTodo');
+
+        await query.add({name:title, period: period, description:description});
+
+        setTitle('');
+        setPeriod('');
+        setDescription('');
+    };
+
+    return (
+        <>
+            <form style={{grow: 1, display: "flex", flexDirection: "column", flexWrap: "wrap"}}>
+                <label htmlFor="title"><b>Title</b></label>
+                <input placeholder="Title" name="title" id="title"
+                       value={title} onChange={(e) => setTitle(e.target.value)}/>
+                <label htmlFor="period"><b>Period</b></label>
+                <input placeholder="Period" name="period" id="period"
+                       value={period} onChange={(e) => setPeriod(e.target.value)}/>
+                <label htmlFor="description"><b>Description</b></label>
+                <textarea placeholder="Description" name="description" id="description"
+                          value={description} onChange={(e) => setDescription(e.target.value)}/>
+                <button type="submit" onClick={addTodo}>Add</button>
+            </form>
         </>
     )
 }
