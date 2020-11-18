@@ -134,11 +134,11 @@ function TodoItem(props){
 
     return (<>
             {readMode ?
-                <tr key={item.id} onClick={() => setOpen(true)}>
-                    <td>{item.name}</td>
-                    <td>{(item.value / item.time).toFixed(1)}</td>
-                    <td>{item.value}</td>
-                    <td>{item.time}</td>
+                <tr key={item.id}>
+                    <td onClick={() => setOpen(true)}>{item.name}</td>
+                    <td onClick={() => setOpen(true)}>{(item.value / item.time).toFixed(1)}</td>
+                    <td onClick={() => setOpen(true)}>{item.value}</td>
+                    <td onClick={() => setOpen(true)}>{item.time}</td>
                     <td>
                         <button onClick={() => setReadMode(false)}>edit</button>
                         <button onClick={() => removeTodo(item.id)}>delete</button>
@@ -253,7 +253,7 @@ function PeriodicTodoList() {
 function PeriodicItem(props){
     const item = props.item;
 
-    const query = firestore.collection('TodoPeriodic');
+    const query = firestore.collection('PeriodicTodo');
     const [readMode, setReadMode] = useState(true);
 
     const [title, setTitle] = useState(item.name);
@@ -261,7 +261,7 @@ function PeriodicItem(props){
 
     const [open, setOpen] = React.useState(false);
 
-    const removeTodo = async (id)=>{
+    const removePeriodicTodo = async (id)=>{
         query.doc(id).delete()
     };
 
@@ -276,12 +276,12 @@ function PeriodicItem(props){
 
     return (<>
             {readMode ?
-                <tr key={item.id} onClick={() => setOpen(true)}>
-                    <td>{item.name}</td>
-                    <td>{item.period}</td>
+                <tr key={item.id}>
+                    <td onClick={() => setOpen(true)}>{item.name}</td>
+                    <td onClick={() => setOpen(true)}>{item.period}</td>
                     <td>
                         <button onClick={() => setReadMode(false)}>edit</button>
-                        <button onClick={() => removeTodo(item.id)}>delete</button>
+                        <button onClick={() => removePeriodicTodo(item.id)}>delete</button>
                     </td>
                 </tr>
                 :
@@ -290,7 +290,7 @@ function PeriodicItem(props){
                     <td><input value={period} onChange={(e) => setPeriod(e.target.value)}/></td>
                     <td>
                         <button onClick={() => saveChanges()}>save</button>
-                        <button onClick={() => removeTodo(item.id)}>delete</button>
+                        <button onClick={() => removePeriodicTodo(item.id)}>delete</button>
                     </td>
                 </tr>
             }
