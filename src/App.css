@@ -18,8 +18,8 @@ th, td{
   grid-template-rows: 1fr;
   gap: 0px 20px;
   grid-template-areas:
-          "periodic TodoList calendar";
+          "Calendar TodoList Periodic";
 }
 .TodoList { grid-area: TodoList; }
-.calendar { grid-area: calendar; }
-.periodic { grid-area: periodic; }
+.Calendar { grid-area: Calendar; }
+.Periodic { grid-area: Periodic; }

@@ -49,22 +49,20 @@ export default class Demo extends React.PureComponent {
         const { data } = this.state;
 
         return (
-            <div style={{width:"80%"}}>
-                <Paper>
-                    <Scheduler data={data} height={800}>
-                        <EditingState onCommitChanges={this.onCommitChanges} />
-                        <EditRecurrenceMenu />
-                        <DayView startDayHour={6} endDayHour={24}/>
-                        <Appointments />
-                        <AppointmentTooltip
-                            showOpenButton
-                            showDeleteButton
-                        />
-                        <DragDropProvider />
-                        <AppointmentForm />
-                    </Scheduler>
-                </Paper>
-            </div>
+            <Paper>
+                <Scheduler data={data} height={800}>
+                    <EditingState onCommitChanges={this.onCommitChanges} />
+                    <EditRecurrenceMenu />
+                    <DayView startDayHour={6} endDayHour={24}/>
+                    <Appointments />
+                    <AppointmentTooltip
+                        showOpenButton
+                        showDeleteButton
+                    />
+                    <DragDropProvider />
+                    <AppointmentForm />
+                </Scheduler>
+            </Paper>
         );
     }
 }

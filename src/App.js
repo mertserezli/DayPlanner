@@ -61,14 +61,13 @@ function SignOut() {
 function DayPlanner() {
     return(
     <div className={"grid-container"}>
-        <div className={"calendar"}>
+        <div className={"Calendar"}>
             <Calendar/>
         </div>
         <div className={"Todolist"}>
-            <SignOut/>
             <TodoList/>
         </div>
-        <div className={"periodic"}>
+        <div className={"Periodic"}>
 
         </div>
     </div>
