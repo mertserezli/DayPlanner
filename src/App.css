@@ -11,3 +11,15 @@ th, td{
 }
 
 .pointer {cursor: pointer;}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr;
+  gap: 0px 20px;
+  grid-template-areas:
+          "periodic TodoList calendar";
+}
+.TodoList { grid-area: TodoList; }
+.calendar { grid-area: calendar; }
+.periodic { grid-area: periodic; }

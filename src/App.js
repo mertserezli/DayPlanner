@@ -32,10 +32,7 @@ function App() {
   return (
       <div className="App">
         <h1 style={{textAlign:"center"}}>Day Planner</h1>
-
-        <section>
           {user ? <DayPlanner /> : <SignIn />}
-        </section>
       </div>
   );
 }
@@ -63,15 +60,18 @@ function SignOut() {
 
 function DayPlanner() {
     return(
-    <main style={{grow: 1, display: "flex", flexDirection: "row"}}>
-        <aside style={{width: "45%", display: "flex", justifyContent: "center"}}>
+    <div className={"grid-container"}>
+        <div className={"calendar"}>
             <Calendar/>
-        </aside>
-        <article style={{flexGrow: "1"}}>
+        </div>
+        <div className={"Todolist"}>
             <SignOut/>
             <TodoList/>
-        </article>
-    </main>
+        </div>
+        <div className={"periodic"}>
+
+        </div>
+    </div>
     )
 }
 
@@ -85,28 +85,25 @@ function TodoList() {
             return item;
         }): [], {key:"score", direction:"descending"});
 
-    return(
-        <div style={{display: "flex", flexDirection: "row", justifyContent:"space-between"}}>
-            <div  style={{width: "35%"}}>
-                <table>
-                    <thead>
-                    <tr>
-                        <th className={"pointer"} onClick={() => requestSort('name')}>To Do</th>
-                        <th className={"pointer"} onClick={() => requestSort('score')}>Score</th>
-                        <th className={"pointer"} onClick={() => requestSort('value')}>Value</th>
-                        <th className={"pointer"} onClick={() => requestSort('time')}>Time</th>
-                        <th>Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {items && items.map(item =>
-                        <TodoItem key={item.id} item={item}/>
-                    )}
-                    </tbody>
-                </table>
-                <AddTodo/>
-            </div>
-        </div>
+    return(<>
+            <table>
+                <thead>
+                <tr>
+                    <th className={"pointer"} onClick={() => requestSort('name')}>To Do</th>
+                    <th className={"pointer"} onClick={() => requestSort('score')}>Score</th>
+                    <th className={"pointer"} onClick={() => requestSort('value')}>Value</th>
+                    <th className={"pointer"} onClick={() => requestSort('time')}>Time</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {items && items.map(item =>
+                    <TodoItem key={item.id} item={item}/>
+                )}
+                </tbody>
+            </table>
+            <AddTodo/>
+        </>
     )
 }
 
