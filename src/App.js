@@ -11,16 +11,18 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import {Modal} from "@material-ui/core";
 
-firebase.initializeApp({
-    apiKey: "AIzaSyAR3BhiHFJEAgb-DjNF4UJqKyK3tg-TndI",
-    authDomain: "dayplanner-f78c2.firebaseapp.com",
-    databaseURL: "https://dayplanner-f78c2.firebaseio.com",
-    projectId: "dayplanner-f78c2",
-    storageBucket: "dayplanner-f78c2.appspot.com",
-    messagingSenderId: "626321664189",
-    appId: "1:626321664189:web:aed04b2f38bc2c7100efd4",
-    measurementId: "G-DF7GXSKEK8"
-});
+if (!firebase.apps.length) {
+    firebase.initializeApp({
+        apiKey: "AIzaSyAR3BhiHFJEAgb-DjNF4UJqKyK3tg-TndI",
+        authDomain: "dayplanner-f78c2.firebaseapp.com",
+        databaseURL: "https://dayplanner-f78c2.firebaseio.com",
+        projectId: "dayplanner-f78c2",
+        storageBucket: "dayplanner-f78c2.appspot.com",
+        messagingSenderId: "626321664189",
+        appId: "1:626321664189:web:aed04b2f38bc2c7100efd4",
+        measurementId: "G-DF7GXSKEK8"
+    });
+}
 
 const auth = firebase.auth();
 const firestore = firebase.firestore();
