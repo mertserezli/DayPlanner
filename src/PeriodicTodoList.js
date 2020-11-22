@@ -60,7 +60,7 @@ function PeriodicItem(props){
     return (<>
             {readMode ?
                 <tr key={item.id}>
-                    <td onClick={() => setOpen(true)}>{item.name}</td>
+                    <td onClick={() => setOpen(true)}><PeriodicItemNameStyler period={item.period}>{item.name}</PeriodicItemNameStyler></td>
                     <td onClick={() => setOpen(true)}>{item.period}</td>
                     <td>
                         <button onClick={() => setReadMode(false)}>edit</button>
@@ -87,6 +87,23 @@ function PeriodicItem(props){
             </Modal>
         </>
     )
+}
+
+function PeriodicItemNameStyler(props){
+    const period = props.period;
+    const toDayName = {0:'sunday', 1:'monday', 2:'tuesday', 3:'wednesday', 4:'thursday', 5:'friday', 6:'saturday'};
+
+    const today = new Date();
+    const isToday = period.toLowerCase().includes(toDayName[today.getDay()]);
+
+    return(<>
+        {isToday ?
+            <span style={{color:"Crimson"}}>{props.children}</span>
+            :
+            <span>{props.children}</span>
+        }
+        </>
+    );
 }
 
 function AddPeriodicTodo(){
