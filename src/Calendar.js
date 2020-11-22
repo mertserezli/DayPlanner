@@ -46,33 +46,38 @@ export default class Demo extends React.PureComponent {
     }
 
     componentDidMount() {
-        this.query.get().then((querySnapshot)=> {
-            const data = querySnapshot.data().data.map(d=>{d.startDate = d.startDate.toDate(); d.endDate = d.endDate.toDate(); return d});
+
+        this.query.onSnapshot(docSnapshot => {
+            let data = docSnapshot.data().data.map(d=>{d.startDate = d.startDate.toDate(); d.endDate = d.endDate.toDate(); return d});
+            const today = new Date();
+            today.setHours(0);
+            today.setMinutes(0);
+            data = data.filter(d => today < d.startDate);
             this.setState({data: data});
+        }, err => {
+            console.log(`Encountered error: ${err}`);
         });
+
     }
 
     commitChanges({ added, changed, deleted }) {
-        this.setState((state) => {
-            let { data } = state;
-            if (added) {
-                const startingAddedId =
-                    data.length > 0 ? data[data.length - 1].id + 1 : 0;
-                data = [...data, { id: startingAddedId, ...added }];
-            }
-            if (changed) {
-                data = data.map((appointment) =>
-                    changed[appointment.id]
-                        ? { ...appointment, ...changed[appointment.id] }
-                        : appointment
-                );
-            }
-            if (deleted !== undefined) {
-                data = data.filter((appointment) => appointment.id !== deleted);
-            }
-            this.query.set({data});
-            return { data };
-        });
+        let { data } = this.state;
+        if (added) {
+            const startingAddedId =
+                data.length > 0 ? data[data.length - 1].id + 1 : 0;
+            data = [...data, { id: startingAddedId, ...added }];
+        }
+        if (changed) {
+            data = data.map((appointment) =>
+                changed[appointment.id]
+                    ? { ...appointment, ...changed[appointment.id] }
+                    : appointment
+            );
+        }
+        if (deleted !== undefined) {
+            data = data.filter((appointment) => appointment.id !== deleted);
+        }
+        this.query.set({data});
     }
 
     render() {
