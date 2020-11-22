@@ -12,7 +12,29 @@ import {
     AppointmentForm,
 } from "@devexpress/dx-react-scheduler-material-ui";
 
+import firebase from 'firebase/app';
+import 'firebase/firestore';
+
+
+if (!firebase.apps.length) {
+    firebase.initializeApp({
+        apiKey: "AIzaSyAR3BhiHFJEAgb-DjNF4UJqKyK3tg-TndI",
+        authDomain: "dayplanner-f78c2.firebaseapp.com",
+        databaseURL: "https://dayplanner-f78c2.firebaseio.com",
+        projectId: "dayplanner-f78c2",
+        storageBucket: "dayplanner-f78c2.appspot.com",
+        messagingSenderId: "626321664189",
+        appId: "1:626321664189:web:aed04b2f38bc2c7100efd4",
+        measurementId: "G-DF7GXSKEK8"
+    });
+}
+
+const firestore = firebase.firestore();
+
 export default class Demo extends React.PureComponent {
+
+    query = firestore.collection('Calendar').doc('date');
+
     constructor(props) {
         super(props);
 
@@ -21,6 +43,13 @@ export default class Demo extends React.PureComponent {
         };
 
         this.onCommitChanges = this.commitChanges.bind(this);
+    }
+
+    componentDidMount() {
+        this.query.get().then((querySnapshot)=> {
+            const data = querySnapshot.data().data.map(d=>{d.startDate = d.startDate.toDate(); d.endDate = d.endDate.toDate(); return d});
+            this.setState({data: data});
+        });
     }
 
     commitChanges({ added, changed, deleted }) {
@@ -41,6 +70,7 @@ export default class Demo extends React.PureComponent {
             if (deleted !== undefined) {
                 data = data.filter((appointment) => appointment.id !== deleted);
             }
+            this.query.set({data});
             return { data };
         });
     }
