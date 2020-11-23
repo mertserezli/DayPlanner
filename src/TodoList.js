@@ -10,9 +10,9 @@ import firebase from 'firebase/app';
 import 'firebase/firestore';
 
 const firestore = firebase.firestore();
+const query = firestore.collection('Todo');
 
 function TodoList() {
-    const query = firestore.collection('Todo');
     const [TodoItems] = useCollectionData(query,{ idField: 'id' });
 
     const { items, requestSort } = useSortableData(TodoItems ?
@@ -46,7 +46,6 @@ function TodoList() {
 function TodoItem(props){
     const item = props.item;
 
-    const query = firestore.collection('Todo');
     const [readMode, setReadMode] = useState(true);
 
     const [title, setTitle] = useState(item.name);
@@ -62,6 +61,10 @@ function TodoItem(props){
     const saveChanges = async () => {
         query.doc(item.id).update({name:title, value:parseInt(value), time:parseInt(time)});
         setReadMode(true)
+    };
+
+    const saveDescription = async (description) => {
+        query.doc(item.id).update({description:description})
     };
 
     const handleClose = ()=>{
@@ -98,7 +101,7 @@ function TodoItem(props){
                 aria-labelledby="simple-modal-title"
                 aria-describedby="simple-modal-description"
             >
-                <Description item={item} onClose={handleClose} />
+                <Description item={item} onClose={handleClose} saveDescription={saveDescription} />
             </Modal>
         </>
     )
@@ -114,7 +117,6 @@ function AddTodo(){
 
     const addTodo = async (e) => {
         e.preventDefault();
-        const query = firestore.collection('Todo');
 
         query.add({name:title, value:parseInt(value), time:parseInt(time), description:description});
 

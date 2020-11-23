@@ -53,6 +53,10 @@ function PeriodicItem(props){
         setReadMode(true)
     };
 
+    const saveDescription = async (description) => {
+        query.doc(item.id).update({description:description})
+    };
+
     const handleClose = ()=>{
         setOpen(false)
     };
@@ -83,7 +87,7 @@ function PeriodicItem(props){
                 aria-labelledby="simple-modal-title"
                 aria-describedby="simple-modal-description"
             >
-                <Description item={item} onClose={handleClose} />
+                <Description item={item} onClose={handleClose} saveDescription={saveDescription} />
             </Modal>
         </>
     )
