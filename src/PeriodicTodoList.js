@@ -94,7 +94,7 @@ function PeriodicItemNameStyler(props){
     const toDayName = {0:'sunday', 1:'monday', 2:'tuesday', 3:'wednesday', 4:'thursday', 5:'friday', 6:'saturday'};
 
     const today = new Date();
-    const isToday = period.toLowerCase().includes(toDayName[today.getDay()]);
+    const isToday = period.toLowerCase().includes(toDayName[today.getDay()]) || period.toLowerCase().includes("daily");
 
     return(<>
         {isToday ?
