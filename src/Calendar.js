@@ -33,11 +33,12 @@ const firestore = firebase.firestore();
 
 export default class Demo extends React.PureComponent {
 
-    query = firestore.collection('Calendar').doc('date');
+
 
     constructor(props) {
         super(props);
-
+        const user = props.user;
+        this.query = firestore.collection('Users').doc(user.uid).collection('Calendar').doc('date');
         this.state = {
             data:[],
         };

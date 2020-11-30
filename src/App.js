@@ -1,13 +1,12 @@
-import React from 'react';
+import React,{useContext} from 'react';
 import './App.css';
 
 import Calendar from './Calendar';
 import PeriodicTodoList from './PeriodicTodoList'
 import TodoList from "./TodoList";
+import AuthProvider, {UserContext, auth} from "./AuthProvider"
 
 import firebase from 'firebase/app';
-import 'firebase/auth';
-import { useAuthState } from 'react-firebase-hooks/auth';
 
 if (!firebase.apps.length) {
     firebase.initializeApp({
@@ -22,18 +21,23 @@ if (!firebase.apps.length) {
     });
 }
 
-const auth = firebase.auth();
 
 function App() {
+    return (
+      <AuthProvider>
+        <Application/>
+      </AuthProvider>
+    );
+}
 
-  const [user] = useAuthState(auth);
-
-  return (
-      <div className="App">
-        <h1 style={{textAlign:"center"}}>Day Planner</h1>
-          {user ? <DayPlanner /> : <SignIn />}
-      </div>
-  );
+function Application() {
+    const user = useContext(UserContext);
+    return(
+        <div className="App">
+            <h1 style={{textAlign:"center"}}>Day Planner</h1>
+            {user ? <DayPlanner /> : <SignIn />}
+        </div>
+    );
 }
 
 function SignIn() {
@@ -58,11 +62,12 @@ function SignOut() {
 }
 
 function DayPlanner() {
+    const user = useContext(UserContext);
     return(
     <div className={"grid-container"}>
         <div className={"Calendar"}>
             <SignOut/>
-            <Calendar/>
+            <Calendar user={user}/>
         </div>
         <div className={"Todolist"}>
             <TodoList/>
