@@ -49,7 +49,10 @@ export default class Demo extends React.PureComponent {
     componentDidMount() {
 
         this.query.onSnapshot(docSnapshot => {
-            let data = docSnapshot.data().data.map(d=>{d.startDate = d.startDate.toDate(); d.endDate = d.endDate.toDate(); return d});
+            let data = [];
+            if(docSnapshot.data()) {
+                data = docSnapshot.data().data.map(d=>{d.startDate = d.startDate.toDate(); d.endDate = d.endDate.toDate(); return d});
+            }
             const today = new Date();
             today.setHours(0);
             today.setMinutes(0);
