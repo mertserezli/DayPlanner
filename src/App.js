@@ -1,4 +1,4 @@
-import React,{useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import './App.css';
 
 import Calendar from './Calendar';
@@ -7,6 +7,7 @@ import TodoList from "./TodoList";
 import AuthProvider, {UserContext, auth} from "./AuthProvider"
 
 import firebase from 'firebase/app';
+import TaskFlow from "./TaskFlow";
 
 if (!firebase.apps.length) {
     firebase.initializeApp({
@@ -63,6 +64,8 @@ function SignOut() {
 
 function DayPlanner() {
     const user = useContext(UserContext);
+    const [isFlow, setIsFlow] = useState(false);
+
     return(
     <div className={"grid-container"}>
         <div className={"Calendar"}>
@@ -70,7 +73,12 @@ function DayPlanner() {
             <Calendar user={user}/>
         </div>
         <div className={"Todolist"}>
-            <TodoList/>
+            <button onClick={()=>setIsFlow(!isFlow)}>{isFlow ? "Stop Flow" : "Start Flow"}</button>
+            {!isFlow ?
+                <TodoList/>
+                :
+                <TaskFlow/>
+            }
         </div>
         <div className={"Periodic"}>
             <PeriodicTodoList/>
