@@ -67,7 +67,7 @@ function CurrentTask(props){
     const removeTask = props.removeTask;
 
     const [name, setName] = useState(task.name);
-    const [urgency, setUrgency] = useState(task.score);
+    const [score, setScore] = useState(task.score);
     const [description, setDescription] = useState(task.description);
     const [scheduledMinLater, setScheduledMinLater] = useState(30);
 
@@ -75,7 +75,7 @@ function CurrentTask(props){
         event.preventDefault();
         const scheduleDate = new Date();
         scheduleDate.setMinutes(scheduleDate.getMinutes() + scheduledMinLater);
-        editTask({name, urgency, description, date: scheduleDate});
+        editTask({name, score, description, date: scheduleDate});
     };
 
     return(
@@ -87,9 +87,9 @@ function CurrentTask(props){
                 <input placeholder="Enter Title" name="title" id="title" required
                        value={name} onChange={event => setName(event.target.value)} /><br/>
 
-                <label htmlFor="urgency">Urgency:</label><br/>
-                <input type="number" placeholder="Enter urgency(1-4)" name="urgency" id="urgency" required
-                       value={urgency} onChange={event => setUrgency(parseInt(event.target.value))} /><br/>
+                <label htmlFor="urgency">Score:</label><br/>
+                <input type="number" placeholder="Enter new score" name="score" id="score" required
+                       value={score} onChange={event => setScore(parseInt(event.target.value))} /><br/>
 
                 <div>
                     <label htmlFor="description">Description:</label><br/>
