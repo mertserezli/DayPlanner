@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback, useContext} from "react";
+import React, {useState, useEffect, useContext} from "react";
 
 import {UserContext} from "./AuthProvider";
 
@@ -6,6 +6,8 @@ import firebase from 'firebase/app';
 import 'firebase/firestore';
 
 const firestore = firebase.firestore();
+
+let timeout;
 
 export default function TaskFlow() {
     const [tasks, setTasks] = useState([]);
@@ -24,35 +26,37 @@ export default function TaskFlow() {
                 data.push(t);
             });
             setTasks(data);
+            pickTask(data)
         })
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
 
     const editTask = (task) => {
-        setTasks([...tasks.filter((t)=> t.name !== task.name), task]);
-        setCurTask(null)
+        const newTasks = [...tasks.filter((t)=> t.name !== task.name), task];
+        setTasks(newTasks);
+        pickTask(newTasks)
     };
 
     const removeTask = (task) => {
-        setTasks(tasks.filter((t)=> t.name !== task.name));
-        setCurTask(null)
+        const newTasks = tasks.filter((t)=> t.name !== task.name);
+        setTasks(newTasks);
+        pickTask(newTasks)
     };
 
-    const pickTask = useCallback(() =>{
-        const eligibleTasks = tasks.filter((t) => t.date < new Date());
-        eligibleTasks.sort((a, b)=> b.score - a.score);
-        setCurTask(eligibleTasks[0]);
-    },[tasks]);
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            if (!curTask){
-                pickTask()
+    function pickTask(tasks){
+        clearTimeout(timeout);
+        const eligibleTasks = tasks.filter((t) => t.date < new Date()).sort((a, b)=> b.score - a.score);
+        if(0 < eligibleTasks.length) {
+            setCurTask(eligibleTasks[0]);
+        }else{
+            setCurTask(null);
+            if (0 < tasks.length) {
+                const closest = Math.min(...tasks.map(t => t.date.getTime()));
+                timeout = setTimeout(()=>pickTask(tasks), closest - new Date().getTime() + 500);
             }
-        }, 1000);
-        return () => clearInterval(interval);
-    }, [curTask, pickTask]);
+        }
+    }
 
     return(
         <div>
@@ -66,16 +70,19 @@ function CurrentTask(props){
     const editTask = props.editTask;
     const removeTask = props.removeTask;
 
-    const [name, setName] = useState(task.name);
-    const [score, setScore] = useState(task.score);
     const [description, setDescription] = useState(task.description);
     const [scheduledMinLater, setScheduledMinLater] = useState(30);
+
+    useEffect(()=> {
+        setDescription(task.description);
+        setScheduledMinLater(30)
+    },[props.task]);
 
     const handleSubmit = (event) => {
         event.preventDefault();
         const scheduleDate = new Date();
         scheduleDate.setMinutes(scheduleDate.getMinutes() + scheduledMinLater);
-        editTask({name, score, description, date: scheduleDate});
+        editTask({name: task.name, score: task.score, description, date: scheduleDate});
     };
 
     return(
@@ -83,13 +90,9 @@ function CurrentTask(props){
             <form onSubmit={handleSubmit}>
                 <h2>Current Task</h2>
 
-                <label htmlFor="title">Title:</label><br/>
-                <input placeholder="Enter Title" name="title" id="title" required
-                       value={name} onChange={event => setName(event.target.value)} /><br/>
+                <label htmlFor="title">Title: {task.name}</label><br/>
 
-                <label htmlFor="urgency">Score:</label><br/>
-                <input type="number" placeholder="Enter new score" name="score" id="score" required
-                       value={score} onChange={event => setScore(parseInt(event.target.value))} /><br/>
+                <label htmlFor="urgency">Score: {task.score}</label><br/>
 
                 <div>
                     <label htmlFor="description">Description:</label><br/>
