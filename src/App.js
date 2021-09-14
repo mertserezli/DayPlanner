@@ -67,23 +67,25 @@ function DayPlanner() {
     const [isFlow, setIsFlow] = useState(false);
 
     return(
-    <div className={"grid-container"}>
-        <div className={"Calendar"}>
-            <SignOut/>
-            <Calendar user={user}/>
+    <>
+        <SignOut/>
+        <div className={"grid-container"}>
+            <div className={"Calendar"}>
+                <Calendar user={user}/>
+            </div>
+            <div className={"Todolist"}>
+                <button onClick={()=>setIsFlow(!isFlow)}>{isFlow ? "Stop Flow" : "Start Flow"}</button>
+                {!isFlow ?
+                    <TodoList/>
+                    :
+                    <TaskFlow/>
+                }
+            </div>
+            <div className={"Periodic"}>
+                <PeriodicTodoList/>
+            </div>
         </div>
-        <div className={"Todolist"}>
-            <button onClick={()=>setIsFlow(!isFlow)}>{isFlow ? "Stop Flow" : "Start Flow"}</button>
-            {!isFlow ?
-                <TodoList/>
-                :
-                <TaskFlow/>
-            }
-        </div>
-        <div className={"Periodic"}>
-            <PeriodicTodoList/>
-        </div>
-    </div>
+    </>
     )
 }
 
