@@ -76,6 +76,7 @@ function CurrentTask(props){
     useEffect(()=> {
         setDescription(task.description);
         setScheduledMinLater(30)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     },[props.task]);
 
     const handleSubmit = (event) => {
