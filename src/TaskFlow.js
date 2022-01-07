@@ -66,9 +66,7 @@ export default function TaskFlow() {
 }
 
 function CurrentTask(props){
-    const task = props.task;
-    const editTask = props.editTask;
-    const removeTask = props.removeTask;
+    const {task, editTask, removeTask} = props;
 
     const [description, setDescription] = useState(task.description);
     const [scheduledMinLater, setScheduledMinLater] = useState(30);
