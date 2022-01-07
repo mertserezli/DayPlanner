@@ -20,9 +20,11 @@ export default function TaskFlow() {
             const now = new Date();
             const data = [];
             snapshot.forEach((t) => {
+                const id = t.id;
                 t = t.data();
                 t.score = t.value / t.time;
                 t.date = now;
+                t.id = id;
                 data.push(t);
             });
             setTasks(data);
@@ -71,22 +73,37 @@ function CurrentTask(props){
     const [description, setDescription] = useState(task.description);
     const [scheduledMinLater, setScheduledMinLater] = useState(30);
 
+    const user = useContext(UserContext);
+
     useEffect(()=> {
         setDescription(task.description);
-        setScheduledMinLater(30)
+        setScheduledMinLater(30);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     },[props.task]);
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
+    const updateDescription = () => {
+        const query = firestore.collection('Users').doc(user.uid).collection('Todo');
+        query.doc(task.id).update({description:description});
+    };
+
+    const handleEdit = () => {
+        updateDescription();
         const scheduleDate = new Date();
         scheduleDate.setMinutes(scheduleDate.getMinutes() + scheduledMinLater);
-        editTask({name: task.name, score: task.score, description, date: scheduleDate});
+        task.date = scheduleDate;
+        task.description = description;
+        editTask(task);
     };
+
+    const handleRemove = () => {
+        updateDescription();
+        removeTask(task);
+    };
+
 
     return(
         <>
-            <form onSubmit={handleSubmit}>
+            <form>
                 <h2>Current Task</h2>
 
                 <label htmlFor="title">Title: {task.name}</label><br/>
@@ -103,8 +120,8 @@ function CurrentTask(props){
                 <input type="number" placeholder="How long to postpone in minutes" name="postpone" id="postpone" required
                        value={scheduledMinLater} onChange={event => setScheduledMinLater(parseInt(event.target.value))} /><br/><br/>
 
-                <input type="submit" value="Submit" />
-                <input type="button" value="Remove" onClick={()=>removeTask(task)} />
+                <input type="button" value="Queue" onClick={()=> handleEdit()} />
+                <input type="button" value="Remove" onClick={()=> handleRemove()} />
             </form>
         </>
     )
