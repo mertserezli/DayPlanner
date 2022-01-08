@@ -43,13 +43,18 @@ function Application() {
 
 function SignIn() {
 
+    const[error, setError] = useState("");
+
     const signInWithGoogle = () => {
         const provider = new firebase.auth.GoogleAuthProvider();
-        auth.signInWithPopup(provider);
+        auth.signInWithPopup(provider).catch((error)=> {
+            setError(error.message);
+        });
     };
 
     return (
         <div style={{textAlign:"center"}}>
+            <span>{error}</span><br/>
             <button className="sign-in" onClick={signInWithGoogle}>Sign in with Google</button>
         </div>
     )
