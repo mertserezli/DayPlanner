@@ -69,6 +69,7 @@ function TodoItem(props){
     };
 
     const saveDescription = async (description) => {
+        setOpen(false);
         query.doc(item.id).update({description:description})
     };
 
