@@ -1,6 +1,6 @@
-import React, {useState, useEffect, useContext} from "react";
+import React, {useState, useEffect} from "react";
 
-import {UserContext} from "./AuthProvider";
+import {useUserStore} from "./AuthProvider"
 
 import firebase from 'firebase/app';
 import 'firebase/firestore';
@@ -13,7 +13,7 @@ export default function TaskFlow() {
     const [tasks, setTasks] = useState([]);
     const [curTask, setCurTask] = useState(null);
 
-    const user = useContext(UserContext);
+    const user = useUserStore();
     useEffect(()=> {
         const query = firestore.collection('Users').doc(user.uid).collection('Todo');
         query.get().then((snapshot) => {
@@ -73,7 +73,7 @@ function CurrentTask(props){
     const [description, setDescription] = useState(task.description);
     const [scheduledMinLater, setScheduledMinLater] = useState(30);
 
-    const user = useContext(UserContext);
+    const user = useUserStore();
 
     useEffect(()=> {
         setDescription(task.description);

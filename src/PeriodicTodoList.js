@@ -4,14 +4,14 @@ import 'firebase/firestore';
 import Description from './Description'
 
 import {useCollectionData} from "react-firebase-hooks/firestore";
-import React, {useContext, useState} from "react";
 import {Modal} from "@material-ui/core";
-import {UserContext} from "./AuthProvider";
+import React, {useState} from "react";
+import {useUserStore} from "./AuthProvider";
 
 const firestore = firebase.firestore();
 
 function PeriodicTodoList() {
-    const user = useContext(UserContext);
+    const user = useUserStore();
     const query = firestore.collection('Users').doc(user.uid).collection('PeriodicTodo');
     const [TodoItems] = useCollectionData(query,{ idField: 'id' });
 
@@ -38,7 +38,7 @@ function PeriodicTodoList() {
 function PeriodicItem(props){
     const item = props.item;
 
-    const user = useContext(UserContext);
+    const user = useUserStore();
     const query = firestore.collection('Users').doc(user.uid).collection('PeriodicTodo');
     const [readMode, setReadMode] = useState(true);
 
@@ -120,7 +120,7 @@ function AddPeriodicTodo(){
 
     const [open, setOpen] = useState(false);
 
-    const user = useContext(UserContext);
+    const user = useUserStore();
     const query = firestore.collection('Users').doc(user.uid).collection('PeriodicTodo');
 
     const addTodo = async (e) => {

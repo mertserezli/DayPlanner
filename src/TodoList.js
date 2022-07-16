@@ -1,12 +1,12 @@
 import {useCollectionData} from "react-firebase-hooks/firestore";
 
-import React, {useState, useContext} from "react";
+import React, {useState} from "react";
 
 import {Modal} from "@material-ui/core";
 
 import Description from "./Description";
 import useSortableData from "./UseSortableData";
-import {UserContext} from "./AuthProvider";
+import {useUserStore} from "./AuthProvider";
 
 import firebase from 'firebase/app';
 import 'firebase/firestore';
@@ -14,7 +14,7 @@ import 'firebase/firestore';
 const firestore = firebase.firestore();
 
 function TodoList() {
-    const user = useContext(UserContext);
+    const user = useUserStore();
     const query = firestore.collection('Users').doc(user.uid).collection('Todo');
     const [TodoItems] = useCollectionData(query,{ idField: 'id' });
 
@@ -47,7 +47,7 @@ function TodoList() {
 }
 
 function TodoItem(props){
-    const user = useContext(UserContext);
+    const user = useUserStore();
     const query = firestore.collection('Users').doc(user.uid).collection('Todo');
     const item = props.item;
 
@@ -114,7 +114,7 @@ function TodoItem(props){
 }
 
 function AddTodo(){
-    const user = useContext(UserContext);
+    const user = useUserStore();
     const query = firestore.collection('Users').doc(user.uid).collection('Todo');
 
     const [title, setTitle] = useState('');

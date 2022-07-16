@@ -1,10 +1,10 @@
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import './App.css';
 
 import Calendar from './Calendar';
 import PeriodicTodoList from './PeriodicTodoList'
 import TodoList from "./TodoList";
-import AuthProvider, {UserContext, auth} from "./AuthProvider"
+import AuthProvider, {useUserStore} from "./AuthProvider"
 
 import firebase from 'firebase/app';
 import TaskFlow from "./TaskFlow";
@@ -32,7 +32,7 @@ function App() {
 }
 
 function Application() {
-    const user = useContext(UserContext);
+    const user = useUserStore();
     return(
         <div className="App">
             <h1 style={{textAlign:"center"}}>Day Planner</h1>
@@ -44,6 +44,7 @@ function Application() {
 function SignIn() {
 
     const[error, setError] = useState("");
+    const auth = firebase.auth();
 
     const signInWithGoogle = () => {
         const provider = new firebase.auth.GoogleAuthProvider();
@@ -62,13 +63,15 @@ function SignIn() {
 }
 
 function SignOut() {
-    return auth.currentUser && (
+    const user = useUserStore();
+    const auth = firebase.auth();
+    return user && (
         <button className="sign-out" onClick={() => auth.signOut()}>Sign Out</button>
     )
 }
 
 function DayPlanner() {
-    const user = useContext(UserContext);
+    const user = useUserStore();
     const [isFlow, setIsFlow] = useState(false);
 
     return(
