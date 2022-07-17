@@ -2,10 +2,17 @@ import React, {useState, useEffect} from "react";
 
 import {useUserStore} from "./AuthProvider"
 
-import firebase from 'firebase/app';
-import 'firebase/firestore';
+import {firestore} from "./Firebase";
 
-const firestore = firebase.firestore();
+import {
+    collection,
+    addDoc,
+    updateDoc,
+    deleteDoc,
+    doc,
+    getDocs,
+} from "firebase/firestore";
+
 
 let timeout;
 
@@ -15,8 +22,8 @@ export default function TaskFlow() {
 
     const user = useUserStore();
     useEffect(()=> {
-        const query = firestore.collection('Users').doc(user.uid).collection('Todo');
-        query.get().then((snapshot) => {
+        const query = collection(firestore, 'Users', user.uid, 'Todo');
+        getDocs(query).then((snapshot) => {
             const now = new Date();
             const data = [];
             snapshot.forEach((t) => {
@@ -82,8 +89,8 @@ function CurrentTask(props){
     },[props.task]);
 
     const updateDescription = () => {
-        const query = firestore.collection('Users').doc(user.uid).collection('Todo');
-        query.doc(task.id).update({description:description});
+        const query = collection(firestore, 'Users', user.uid, 'Todo');
+        updateDoc(doc(query, task.id), {description:description})
     };
 
     const handleEdit = () => {

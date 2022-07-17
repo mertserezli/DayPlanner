@@ -4,24 +4,10 @@ import './App.css';
 import Calendar from './Calendar';
 import PeriodicTodoList from './PeriodicTodoList'
 import TodoList from "./TodoList";
-import AuthProvider, {useUserStore} from "./AuthProvider"
+import AuthProvider, {useUserStore} from "./AuthProvider";
+import {firebase, auth} from "./Firebase";
 
-import firebase from 'firebase/app';
 import TaskFlow from "./TaskFlow";
-
-if (!firebase.apps.length) {
-    firebase.initializeApp({
-        apiKey: "AIzaSyAR3BhiHFJEAgb-DjNF4UJqKyK3tg-TndI",
-        authDomain: "dayplanner-f78c2.firebaseapp.com",
-        databaseURL: "https://dayplanner-f78c2.firebaseio.com",
-        projectId: "dayplanner-f78c2",
-        storageBucket: "dayplanner-f78c2.appspot.com",
-        messagingSenderId: "626321664189",
-        appId: "1:626321664189:web:aed04b2f38bc2c7100efd4",
-        measurementId: "G-DF7GXSKEK8"
-    });
-}
-
 
 function App() {
     return (
@@ -44,7 +30,6 @@ function Application() {
 function SignIn() {
 
     const[error, setError] = useState("");
-    const auth = firebase.auth();
 
     const signInWithGoogle = () => {
         const provider = new firebase.auth.GoogleAuthProvider();
@@ -64,7 +49,6 @@ function SignIn() {
 
 function SignOut() {
     const user = useUserStore();
-    const auth = firebase.auth();
     return user && (
         <button className="sign-out" onClick={() => auth.signOut()}>Sign Out</button>
     )

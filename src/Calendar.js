@@ -1,6 +1,6 @@
 /* eslint-disable react/destructuring-assignment */
 import * as React from "react";
-import Paper from "@material-ui/core/Paper";
+import Paper from '@mui/material/Paper';
 import { EditingState } from "@devexpress/dx-react-scheduler";
 import {
     Scheduler,
@@ -12,33 +12,19 @@ import {
     AppointmentForm,
 } from "@devexpress/dx-react-scheduler-material-ui";
 
-import firebase from 'firebase/app';
-import 'firebase/firestore';
-
-
-if (!firebase.apps.length) {
-    firebase.initializeApp({
-        apiKey: "AIzaSyAR3BhiHFJEAgb-DjNF4UJqKyK3tg-TndI",
-        authDomain: "dayplanner-f78c2.firebaseapp.com",
-        databaseURL: "https://dayplanner-f78c2.firebaseio.com",
-        projectId: "dayplanner-f78c2",
-        storageBucket: "dayplanner-f78c2.appspot.com",
-        messagingSenderId: "626321664189",
-        appId: "1:626321664189:web:aed04b2f38bc2c7100efd4",
-        measurementId: "G-DF7GXSKEK8"
-    });
-}
-
-const firestore = firebase.firestore();
+import {firestore} from "./Firebase";
+import {
+    onSnapshot,
+    doc,
+    updateDoc,
+} from "firebase/firestore";
 
 export default class Demo extends React.PureComponent {
-
-
 
     constructor(props) {
         super(props);
         const user = props.user;
-        this.query = firestore.collection('Users').doc(user.uid).collection('Calendar').doc('date');
+        this.query = doc(firestore,'Users', user.uid, 'Calendar', 'date');
         this.state = {
             data:[],
         };
@@ -49,7 +35,7 @@ export default class Demo extends React.PureComponent {
 
     componentDidMount() {
 
-        this.query.onSnapshot(docSnapshot => {
+        onSnapshot(this.query, docSnapshot => {
             let data = [];
             if(docSnapshot.data()) {
                 data = docSnapshot.data().data.map(d=>{d.startDate = d.startDate.toDate(); d.endDate = d.endDate.toDate(); return d});
@@ -82,7 +68,7 @@ export default class Demo extends React.PureComponent {
         if (deleted !== undefined) {
             data = data.filter((appointment) => appointment.id !== deleted);
         }
-        this.query.set({data});
+        updateDoc(this.query, {data});
     }
 
     exportToJson(object){

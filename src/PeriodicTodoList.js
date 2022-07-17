@@ -1,19 +1,32 @@
-import firebase from 'firebase/app';
-import 'firebase/firestore';
+import {firestore} from "./Firebase";
+import {
+    collection,
+    addDoc,
+    updateDoc,
+    deleteDoc,
+    doc,
+} from "firebase/firestore";
 
 import Description from './Description'
 
-import {useCollectionData} from "react-firebase-hooks/firestore";
-import {Modal} from "@material-ui/core";
+import {useCollection} from "react-firebase-hooks/firestore";
 import React, {useState} from "react";
+import Modal from '@mui/material/Modal';
 import {useUserStore} from "./AuthProvider";
-
-const firestore = firebase.firestore();
 
 function PeriodicTodoList() {
     const user = useUserStore();
-    const query = firestore.collection('Users').doc(user.uid).collection('PeriodicTodo');
-    const [TodoItems] = useCollectionData(query,{ idField: 'id' });
+    const query = collection(firestore, 'Users', user.uid, 'PeriodicTodo');
+    const [TodoItems] = useCollection(query,{ idField: 'id' });
+    const items = TodoItems ?
+        TodoItems.docs.map(item => {
+            let id = item.id;
+            item = item.data();
+            item.id = id;
+            return item;
+        })
+        :
+        [];
 
     return(<>
             <AddPeriodicTodo/>
@@ -26,7 +39,7 @@ function PeriodicTodoList() {
                 </tr>
                 </thead>
                 <tbody>
-                {TodoItems && TodoItems.map(item =>
+                {items && items.map(item =>
                     <PeriodicItem key={item.id} item={item}/>
                 )}
                 </tbody>
@@ -39,7 +52,7 @@ function PeriodicItem(props){
     const item = props.item;
 
     const user = useUserStore();
-    const query = firestore.collection('Users').doc(user.uid).collection('PeriodicTodo');
+    const query = collection(firestore, 'Users', user.uid, 'PeriodicTodo');
     const [readMode, setReadMode] = useState(true);
 
     const [title, setTitle] = useState(item.name);
@@ -48,16 +61,16 @@ function PeriodicItem(props){
     const [open, setOpen] = useState(false);
 
     const removePeriodicTodo = async (id)=>{
-        query.doc(id).delete()
+        deleteDoc(doc(query, id));
     };
 
     const saveChanges = async () => {
-        query.doc(item.id).update({name:title, period:period});
+        updateDoc(doc(query, item.id), {name:title, period:period});
         setReadMode(true)
     };
 
     const saveDescription = async (description) => {
-        query.doc(item.id).update({description:description})
+        updateDoc(doc(query, item.id),{description:description})
     };
 
     const handleClose = ()=>{
@@ -121,12 +134,12 @@ function AddPeriodicTodo(){
     const [open, setOpen] = useState(false);
 
     const user = useUserStore();
-    const query = firestore.collection('Users').doc(user.uid).collection('PeriodicTodo');
+    const query = collection(firestore, 'Users', user.uid, 'PeriodicTodo');
 
     const addTodo = async (e) => {
         e.preventDefault();
 
-        await query.add({name:title, period: period, description:description});
+        addDoc(query, {name:title, period: period, description:description});
 
         setTitle('');
         setPeriod('');

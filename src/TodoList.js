@@ -1,25 +1,32 @@
-import {useCollectionData} from "react-firebase-hooks/firestore";
+import {useCollection} from "react-firebase-hooks/firestore";
 
 import React, {useState} from "react";
 
-import {Modal} from "@material-ui/core";
+import Modal from '@mui/material/Modal';
 
 import Description from "./Description";
 import useSortableData from "./UseSortableData";
 import {useUserStore} from "./AuthProvider";
 
-import firebase from 'firebase/app';
-import 'firebase/firestore';
-
-const firestore = firebase.firestore();
+import {firestore} from "./Firebase";
+import {
+    collection,
+    addDoc,
+    updateDoc,
+    deleteDoc,
+    doc,
+} from "firebase/firestore";
 
 function TodoList() {
     const user = useUserStore();
-    const query = firestore.collection('Users').doc(user.uid).collection('Todo');
-    const [TodoItems] = useCollectionData(query,{ idField: 'id' });
+    const query = collection(firestore, 'Users', user.uid, 'Todo');
+    const [TodoItems] = useCollection(query,{ idField: 'id' });
 
     const { items, requestSort } = useSortableData(TodoItems ?
-        TodoItems.map(item => {
+        TodoItems.docs.map(item => {
+            let id = item.id;
+            item = item.data();
+            item.id = id;
             item.score = item.value / item.time;
             return item;
         }): [], {key:"score", direction:"descending"});
@@ -48,7 +55,7 @@ function TodoList() {
 
 function TodoItem(props){
     const user = useUserStore();
-    const query = firestore.collection('Users').doc(user.uid).collection('Todo');
+    const query = collection(firestore, 'Users', user.uid, 'Todo');
     const item = props.item;
 
     const [readMode, setReadMode] = useState(true);
@@ -60,17 +67,17 @@ function TodoItem(props){
     const [open, setOpen] = useState(false);
 
     const removeTodo = async (id)=>{
-        query.doc(id).delete()
+        deleteDoc(doc(query, id));
     };
 
     const saveChanges = async () => {
-        query.doc(item.id).update({name:title, value:parseInt(value), time:parseInt(time)});
+        updateDoc(doc(query, item.id), {name:title, value:parseInt(value), time:parseInt(time)});
         setReadMode(true)
     };
 
     const saveDescription = async (description) => {
         setOpen(false);
-        query.doc(item.id).update({description:description})
+        updateDoc(doc(query, item.id), {description:description})
     };
 
     const handleClose = ()=>{
@@ -115,7 +122,7 @@ function TodoItem(props){
 
 function AddTodo(){
     const user = useUserStore();
-    const query = firestore.collection('Users').doc(user.uid).collection('Todo');
+    const query = collection(firestore, 'Users', user.uid, 'Todo');
 
     const [title, setTitle] = useState('');
     const [value, setValue] = useState('');
@@ -127,7 +134,7 @@ function AddTodo(){
     const addTodo = async (e) => {
         e.preventDefault();
 
-        query.add({name:title, value:parseInt(value), time:parseInt(time), description:description});
+        addDoc(query, {name:title, value:parseInt(value), time:parseInt(time), description:description});
 
         setTitle('');
         setValue('');
