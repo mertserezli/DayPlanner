@@ -1,23 +1,13 @@
-import {firestore} from "./Firebase";
-import {
-    collection,
-    addDoc,
-    updateDoc,
-    deleteDoc,
-    doc,
-} from "firebase/firestore";
+import {getPeriodicTodoListQuery, removePeriodicTodoItem, updatePeriodicTodoItem, updatePeriodicTodoDescriptionItem, addPeriodicTodoItem} from "./Firebase";
 
 import Description from './Description'
 
 import {useCollection} from "react-firebase-hooks/firestore";
 import React, {useState} from "react";
 import Modal from '@mui/material/Modal';
-import {useUserStore} from "./AuthProvider";
 
 function PeriodicTodoList() {
-    const user = useUserStore();
-    const query = collection(firestore, 'Users', user.uid, 'PeriodicTodo');
-    const [TodoItems] = useCollection(query,{ idField: 'id' });
+    const [TodoItems] = useCollection(getPeriodicTodoListQuery());
     const items = TodoItems ?
         TodoItems.docs.map(item => {
             let id = item.id;
@@ -48,11 +38,7 @@ function PeriodicTodoList() {
     )
 }
 
-function PeriodicItem(props){
-    const item = props.item;
-
-    const user = useUserStore();
-    const query = collection(firestore, 'Users', user.uid, 'PeriodicTodo');
+function PeriodicItem({item}){
     const [readMode, setReadMode] = useState(true);
 
     const [title, setTitle] = useState(item.name);
@@ -60,22 +46,23 @@ function PeriodicItem(props){
 
     const [open, setOpen] = useState(false);
 
-    const removePeriodicTodo = async (id)=>{
-        deleteDoc(doc(query, id));
-    };
+    async function handleRemovePeriodicTodo(){
+        removePeriodicTodoItem(item.id)
+    }
 
-    const saveChanges = async () => {
-        updateDoc(doc(query, item.id), {name:title, period:period});
+    async function saveChanges(){
+        updatePeriodicTodoItem(item.id, title, period);
         setReadMode(true)
-    };
+    }
 
-    const saveDescription = async (description) => {
-        updateDoc(doc(query, item.id),{description:description})
-    };
-
-    const handleClose = ()=>{
+    async function saveDescription(description){
+        updatePeriodicTodoDescriptionItem(item.id, description);
         setOpen(false)
-    };
+    }
+
+    function handleClose(){
+        setOpen(false)
+    }
 
     return (<>
             {readMode ?
@@ -84,7 +71,7 @@ function PeriodicItem(props){
                     <td onClick={() => setOpen(true)}>{item.period}</td>
                     <td>
                         <button onClick={() => setReadMode(false)}>edit</button>
-                        <button onClick={() => removePeriodicTodo(item.id)}>delete</button>
+                        <button onClick={handleRemovePeriodicTodo}>delete</button>
                     </td>
                 </tr>
                 :
@@ -92,8 +79,8 @@ function PeriodicItem(props){
                     <td><input value={title} onChange={(e) => setTitle(e.target.value)}/></td>
                     <td><input value={period} onChange={(e) => setPeriod(e.target.value)}/></td>
                     <td>
-                        <button onClick={() => saveChanges()}>save</button>
-                        <button onClick={() => removePeriodicTodo(item.id)}>delete</button>
+                        <button onClick={saveChanges}>save</button>
+                        <button onClick={handleRemovePeriodicTodo}>delete</button>
                     </td>
                 </tr>
             }
@@ -127,28 +114,17 @@ function PeriodicItemNameStyler(props){
 }
 
 function AddPeriodicTodo(){
-    const [title, setTitle] = useState('');
-    const [period, setPeriod] = useState('');
-    const [description, setDescription] = useState('');
-
     const [open, setOpen] = useState(false);
 
-    const user = useUserStore();
-    const query = collection(firestore, 'Users', user.uid, 'PeriodicTodo');
-
-    const addTodo = async (e) => {
+    async function handleAddPeriodicTodo(e){
         e.preventDefault();
-
-        addDoc(query, {name:title, period: period, description:description});
-
-        setTitle('');
-        setPeriod('');
-        setDescription('');
-    };
-
-    const handleClose = ()=>{
+        addPeriodicTodoItem(e.target.elements.title.value, e.target.elements.period.value, e.target.elements.description.value);
         setOpen(false)
-    };
+    }
+
+    function handleClose(){
+        setOpen(false)
+    }
 
     return (
         <>
@@ -160,17 +136,14 @@ function AddPeriodicTodo(){
                 aria-describedby="simple-modal-description"
             >
                 <div style={{display: "flex", flexDirection: "column", top:"50%", left:"50%", width:"40%", transform:"translate(70%, 80%)", backgroundColor:"white", padding: "25px", borderRadius: "10px"}}>
-                    <form style={{grow: 1, display: "flex", flexDirection: "column", flexWrap: "wrap"}}>
+                    <form style={{grow: 1, display: "flex", flexDirection: "column", flexWrap: "wrap"}} onSubmit={handleAddPeriodicTodo}>
                         <label htmlFor="title"><b>Title</b></label>
-                        <input placeholder="Title" name="title" id="title"
-                               value={title} onChange={(e) => setTitle(e.target.value)}/>
+                        <input placeholder="Title" name="title" id="title"/>
                         <label htmlFor="period"><b>Period</b></label>
-                        <input placeholder="Period" name="period" id="period"
-                               value={period} onChange={(e) => setPeriod(e.target.value)}/>
+                        <input placeholder="Period" name="period" id="period"/>
                         <label htmlFor="description"><b>Description</b></label>
-                        <textarea placeholder="Description" name="description" id="description"
-                                  value={description} onChange={(e) => setDescription(e.target.value)}/>
-                        <button type="submit" onClick={addTodo}>Add</button>
+                        <textarea placeholder="Description" name="description" id="description"/>
+                        <button type="submit">Add</button>
                     </form>
                 </div>
             </Modal>

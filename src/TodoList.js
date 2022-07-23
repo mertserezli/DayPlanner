@@ -6,21 +6,11 @@ import Modal from '@mui/material/Modal';
 
 import Description from "./Description";
 import useSortableData from "./UseSortableData";
-import {useUserStore} from "./AuthProvider";
 
-import {firestore} from "./Firebase";
-import {
-    collection,
-    addDoc,
-    updateDoc,
-    deleteDoc,
-    doc,
-} from "firebase/firestore";
+import {getTodoListQuery, removeTodoItem, updateTodoItem, updateTodoDescription, addTodoItem} from "./Firebase";
 
 function TodoList() {
-    const user = useUserStore();
-    const query = collection(firestore, 'Users', user.uid, 'Todo');
-    const [TodoItems] = useCollection(query,{ idField: 'id' });
+    const [TodoItems] = useCollection(getTodoListQuery());
 
     const { items, requestSort } = useSortableData(TodoItems ?
         TodoItems.docs.map(item => {
@@ -53,11 +43,7 @@ function TodoList() {
     )
 }
 
-function TodoItem(props){
-    const user = useUserStore();
-    const query = collection(firestore, 'Users', user.uid, 'Todo');
-    const item = props.item;
-
+function TodoItem({item}){
     const [readMode, setReadMode] = useState(true);
 
     const [title, setTitle] = useState(item.name);
@@ -66,23 +52,23 @@ function TodoItem(props){
 
     const [open, setOpen] = useState(false);
 
-    const removeTodo = async (id)=>{
-        deleteDoc(doc(query, id));
-    };
+    async function handleRemoveTodo(){
+        removeTodoItem(item.id)
+    }
 
-    const saveChanges = async () => {
-        updateDoc(doc(query, item.id), {name:title, value:parseInt(value), time:parseInt(time)});
+    async function  saveChanges(){
+        updateTodoItem(item.id, title, parseInt(value), parseInt(time));
         setReadMode(true)
-    };
+    }
 
-    const saveDescription = async (description) => {
+    async function saveDescription(description){
         setOpen(false);
-        updateDoc(doc(query, item.id), {description:description})
-    };
+        updateTodoDescription(item.id, description);
+    }
 
-    const handleClose = ()=>{
+    function handleClose(){
         setOpen(false)
-    };
+    }
 
     return (<>
             {readMode ?
@@ -93,7 +79,7 @@ function TodoItem(props){
                     <td onClick={() => setOpen(true)}>{item.time}</td>
                     <td>
                         <button onClick={() => setReadMode(false)}>edit</button>
-                        <button onClick={() => removeTodo(item.id)}>delete</button>
+                        <button onClick={handleRemoveTodo}>delete</button>
                     </td>
                 </tr>
                 :
@@ -103,8 +89,8 @@ function TodoItem(props){
                     <td><input type="number" value={value} onChange={(e) => setValue(e.target.value)}/></td>
                     <td><input type="number" value={time} onChange={(e) => setTime(e.target.value)}/></td>
                     <td>
-                        <button onClick={() => saveChanges()}>save</button>
-                        <button onClick={() => removeTodo(item.id)}>delete</button>
+                        <button onClick={saveChanges}>save</button>
+                        <button onClick={handleRemoveTodo}>delete</button>
                     </td>
                 </tr>
             }
@@ -121,32 +107,17 @@ function TodoItem(props){
 }
 
 function AddTodo(){
-    const user = useUserStore();
-    const query = collection(firestore, 'Users', user.uid, 'Todo');
-
-    const [title, setTitle] = useState('');
-    const [value, setValue] = useState('');
-    const [time, setTime] = useState('');
-    const [description, setDescription] = useState('');
-
     const [open, setOpen] = useState(false);
 
-    const addTodo = async (e) => {
+    const handleAddTodo = async (e) => {
         e.preventDefault();
-
-        addDoc(query, {name:title, value:parseInt(value), time:parseInt(time), description:description});
-
-        setTitle('');
-        setValue('');
-        setTime('');
-        setDescription('');
-
+        addTodoItem(e.target.elements.title.value, parseInt(e.target.elements.value.value), parseInt(e.target.elements.time.value), e.target.elements.description.value);
         setOpen(false)
     };
 
-    const handleClose = ()=>{
+    function handleClose(){
         setOpen(false)
-    };
+    }
 
     return (
         <>
@@ -158,20 +129,16 @@ function AddTodo(){
                 aria-describedby="simple-modal-description"
             >
                 <div style={{display: "flex", flexDirection: "column", top:"50%", left:"50%", width:"40%", transform:"translate(70%, 80%)", backgroundColor:"white", padding: "25px", borderRadius: "10px"}}>
-                    <form style={{grow: 1, display: "flex", flexDirection: "column", flexWrap: "wrap"}}>
+                    <form style={{grow: 1, display: "flex", flexDirection: "column", flexWrap: "wrap"}} onSubmit={handleAddTodo}>
                         <label htmlFor="title"><b>Title</b></label>
-                        <input placeholder="Title" name="title" id="title"
-                               value={title} onChange={(e) => setTitle(e.target.value)}/>
+                        <input placeholder="Title" name="title" id="title"/>
                         <label htmlFor="value"><b>Value</b></label>
-                        <input placeholder="INTRINSIC Value" type="number" name="value" id="value"
-                               value={value} onChange={(e) => setValue(e.target.value)}/>
+                        <input placeholder="INTRINSIC Value" type="number" name="value" id="value"/>
                         <label htmlFor="time"><b>Time</b></label>
-                        <input placeholder="Time(minutes)" type="number" name="time" id="time"
-                               value={time} onChange={(e) => setTime(e.target.value)}/>
+                        <input placeholder="Time(minutes)" type="number" name="time" id="time"/>
                         <label htmlFor="description"><b>Description</b></label>
-                        <textarea placeholder="Description" name="description" id="description"
-                                  value={description} onChange={(e) => setDescription(e.target.value)}/>
-                        <button type="submit" onClick={addTodo}>Add</button>
+                        <textarea placeholder="Description" name="description" id="description"/>
+                        <button type="submit">Add</button>
                     </form>
                 </div>
             </Modal>

@@ -6,7 +6,7 @@ import Calendar from './Calendar';
 import PeriodicTodoList from './PeriodicTodoList'
 import TodoList from "./TodoList";
 import AuthProvider, {useUserStore} from "./AuthProvider";
-import {firebase, auth} from "./Firebase";
+import {auth} from "./Firebase";
 
 import TaskFlow from "./TaskFlow";
 
@@ -57,7 +57,6 @@ function SignOut() {
 }
 
 function DayPlanner() {
-    const user = useUserStore();
     const [isFlow, setIsFlow] = useState(false);
 
     return(
@@ -65,7 +64,7 @@ function DayPlanner() {
         <SignOut/>
         <div className={"grid-container"}>
             <div className={"Calendar"}>
-                <Calendar user={user}/>
+                <Calendar/>
             </div>
             <div className={"Todolist"}>
                 <button onClick={()=>setIsFlow(!isFlow)}>{isFlow ? "Stop Flow" : "Start Flow"}</button>

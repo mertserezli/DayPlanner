@@ -1,15 +1,8 @@
 import React, {useState, useEffect} from "react";
 
-import {useUserStore} from "./AuthProvider"
+import { updateTodoDescription, getTodoListQuery} from "./Firebase";
 
-import {firestore} from "./Firebase";
-
-import {
-    collection,
-    updateDoc,
-    doc,
-    getDocs,
-} from "firebase/firestore";
+import {getDocs,} from "firebase/firestore";
 
 
 let timeout;
@@ -18,10 +11,8 @@ export default function TaskFlow() {
     const [tasks, setTasks] = useState([]);
     const [curTask, setCurTask] = useState(null);
 
-    const user = useUserStore();
     useEffect(()=> {
-        const query = collection(firestore, 'Users', user.uid, 'Todo');
-        getDocs(query).then((snapshot) => {
+        getDocs(getTodoListQuery()).then((snapshot) => {
             const now = new Date();
             const data = [];
             snapshot.forEach((t) => {
@@ -72,38 +63,29 @@ export default function TaskFlow() {
     )
 }
 
-function CurrentTask(props){
-    const {task, editTask, removeTask} = props;
-
+function CurrentTask({task, editTask, removeTask}){
     const [description, setDescription] = useState(task.description);
     const [scheduledMinLater, setScheduledMinLater] = useState(30);
-
-    const user = useUserStore();
 
     useEffect(()=> {
         setDescription(task.description);
         setScheduledMinLater(30);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[props.task]);
+    },[task]);
 
-    const updateDescription = () => {
-        const query = collection(firestore, 'Users', user.uid, 'Todo');
-        updateDoc(doc(query, task.id), {description:description})
-    };
-
-    const handleEdit = () => {
-        updateDescription();
+    function handleEdit(){
+        updateTodoDescription(task.id, description);
         const scheduleDate = new Date();
         scheduleDate.setMinutes(scheduleDate.getMinutes() + scheduledMinLater);
         task.date = scheduleDate;
         task.description = description;
         editTask(task);
-    };
+    }
 
-    const handleRemove = () => {
-        updateDescription();
+    function handleRemove(){
+        updateTodoDescription(task.id, description);
         removeTask(task);
-    };
+    }
 
 
     return(
@@ -125,8 +107,8 @@ function CurrentTask(props){
                 <input type="number" placeholder="How long to postpone in minutes" name="postpone" id="postpone" required
                        value={scheduledMinLater} onChange={event => setScheduledMinLater(parseInt(event.target.value))} /><br/><br/>
 
-                <input type="button" value="Queue" onClick={()=> handleEdit()} />
-                <input type="button" value="Remove" onClick={()=> handleRemove()} />
+                <input type="button" value="Queue" onClick={handleEdit} />
+                <input type="button" value="Remove" onClick={handleRemove} />
             </form>
         </>
     )

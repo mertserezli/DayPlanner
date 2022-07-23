@@ -1,4 +1,3 @@
-/* eslint-disable react/destructuring-assignment */
 import * as React from "react";
 import Paper from '@mui/material/Paper';
 import { EditingState } from "@devexpress/dx-react-scheduler";
@@ -12,19 +11,17 @@ import {
     AppointmentForm,
 } from "@devexpress/dx-react-scheduler-material-ui";
 
-import {firestore} from "./Firebase";
+import {getCalendarItemsQuery} from "./Firebase";
 import {
     onSnapshot,
-    doc,
     updateDoc,
 } from "firebase/firestore";
 
-export default class Demo extends React.PureComponent {
+export default class Calendar extends React.PureComponent {
 
     constructor(props) {
         super(props);
-        const user = props.user;
-        this.query = doc(firestore,'Users', user.uid, 'Calendar', 'date');
+        this.query = getCalendarItemsQuery();
         this.state = {
             data:[],
         };
