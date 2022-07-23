@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import './App.css';
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 import Calendar from './Calendar';
 import PeriodicTodoList from './PeriodicTodoList'
@@ -32,8 +33,8 @@ function SignIn() {
     const[error, setError] = useState("");
 
     const signInWithGoogle = () => {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        auth.signInWithPopup(provider).catch((error)=> {
+        const provider = new GoogleAuthProvider();
+        signInWithPopup(auth, provider).catch((error)=> {
             setError(error.message);
         });
     };
@@ -49,8 +50,9 @@ function SignIn() {
 
 function SignOut() {
     const user = useUserStore();
+    function handleSignOut(){auth.signOut()}
     return user && (
-        <button className="sign-out" onClick={() => auth.signOut()}>Sign Out</button>
+        <button className="sign-out" onClick={handleSignOut}>Sign Out</button>
     )
 }
 
