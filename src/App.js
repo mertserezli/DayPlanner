@@ -1,12 +1,12 @@
 import React, {useState} from 'react';
 import './App.css';
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 import Calendar from './Calendar';
 import PeriodicTodoList from './PeriodicTodoList'
 import TodoList from "./TodoList";
 import AuthProvider, {useUserStore} from "./AuthProvider";
 import {auth} from "./Firebase";
+import SignIn from "./SignIn"
 
 import TaskFlow from "./TaskFlow";
 
@@ -26,26 +26,6 @@ function Application() {
             {user ? <DayPlanner /> : <SignIn />}
         </div>
     );
-}
-
-function SignIn() {
-
-    const[error, setError] = useState("");
-
-    const signInWithGoogle = () => {
-        const provider = new GoogleAuthProvider();
-        signInWithPopup(auth, provider).catch((error)=> {
-            setError(error.message);
-        });
-    };
-
-    return (
-        <div style={{textAlign:"center"}}>
-            <span>{error}</span><br/>
-            <button className="sign-in" onClick={signInWithGoogle}>Sign in with Google</button>
-        </div>
-    )
-
 }
 
 function SignOut() {
