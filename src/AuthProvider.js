@@ -5,11 +5,10 @@ import {useAuthState} from "react-firebase-hooks/auth";
 
 const UserContext = createContext(null);
 
-export default function UserProvider(props){
-    const [user] = useAuthState(auth);
-
+export default function AuthProvider(props){
+    const [user, loading] = useAuthState(auth);
     return(
-        <UserContext.Provider value={user}>
+        <UserContext.Provider value={{user, loading}}>
             {props.children}
         </UserContext.Provider>
     )
