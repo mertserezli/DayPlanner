@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import './App.css';
+import { Routes, Route, Link, Navigate } from "react-router-dom";
 
 import Calendar from './Calendar';
 import PeriodicTodoList from './PeriodicTodoList'
@@ -7,23 +8,30 @@ import TodoList from "./TodoList";
 import AuthProvider, {useUserStore} from "./AuthProvider";
 import {auth} from "./Firebase";
 import SignIn from "./SignIn"
+import SignUp from "./SignUp";
 
 import TaskFlow from "./TaskFlow";
+import {createTheme} from "@mui/material";
+
+const theme = createTheme();
 
 function App() {
     return (
       <AuthProvider>
-        <Application/>
+          <Routes>
+              <Route path={"/"} element={<Application/>} />
+              <Route path={"/signin"} element={<SignIn/>} />
+              <Route path={"/signup"} element={<SignUp/>} />
+          </Routes>
       </AuthProvider>
     );
 }
 
 function Application() {
-    const user = useUserStore();
+    const {user, loading} = useUserStore();
     return(
         <div className="App">
-            <h1 style={{textAlign:"center"}}>Day Planner</h1>
-            {user ? <DayPlanner /> : <SignIn />}
+            {loading ? <>< /> : user ? <DayPlanner /> : <Navigate replace to="/signin" />}
         </div>
     );
 }

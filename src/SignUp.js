@@ -1,38 +1,37 @@
 import React, {useState} from "react";
 import {auth} from "./Firebase";
 
+import {useCreateUserWithEmailAndPassword} from "react-firebase-hooks/auth";
+
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import GoogleIcon from '@mui/icons-material/Google';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import IconButton from "@mui/material/IconButton";
 
-import {Link as RouterLink, MemoryRouter, useNavigate} from 'react-router-dom';
-import {useSignInWithGoogle} from "react-firebase-hooks/auth";
+import { Link as RouterLink} from 'react-router-dom';
 
-export default function SignIn() {
-    const navigate = useNavigate();
-    const [signInWithGoogle, , , error] = useSignInWithGoogle(auth);
+export default function SignUp() {
+    const [
+        createUserWithEmailAndPassword,
+        user,
+        loading,
+        error,
+    ] = useCreateUserWithEmailAndPassword(auth);
 
-    const signInWithGoogleHandler = () => {
-        signInWithGoogle().then((result) => navigate("/"))
-    };
-
-    const handleSubmit = (event) => {
+    function handleSubmit(event){
         event.preventDefault();
         const data = new FormData(event.currentTarget);
         console.log({
             email: data.get('email'),
             password: data.get('password'),
         });
-    };
+        createUserWithEmailAndPassword(data.get('email'), data.get('password'));
+    }
 
     return (
         <Container component="main" maxWidth="xs">
@@ -49,16 +48,11 @@ export default function SignIn() {
                     <LockOutlinedIcon />
                 </Avatar>
                 <Typography component="h1" variant="h5">
-                    Sign in
+                    Sign up
                 </Typography>
-                <span>{error}</span><br/>
-                <IconButton
-                    aria-label="Sign-in with google"
-                    color="primary"
-                    onClick={signInWithGoogleHandler}
-                >
-                    <GoogleIcon />
-                </IconButton >
+                {user && <><span>{"You are already logged in"}</span><br/></>}
+                {error && <><span>{error.message}</span><br/></>}
+                {loading && <><span>{"loading"}</span><br/></>}
                 <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
                     <TextField
                         margin="normal"
@@ -75,7 +69,7 @@ export default function SignIn() {
                         required
                         fullWidth
                         name="password"
-                        label=""
+                        label="Password"
                         type="password"
                         id="password"
                         autoComplete="current-password"
@@ -86,20 +80,11 @@ export default function SignIn() {
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
                     >
-                        Sign In
+                        Sign Up
                     </Button>
-                    <Grid container>
-                        <Grid item xs>
-                            <Link component={RouterLink} to="/forgotpassword" variant="body2">
-                                Forgot password?
-                            </Link>
-                        </Grid>
-                        <Grid item>
-                            <Link component={RouterLink} to={"/signup"} variant="body2">
-                                Don't have an account? Sign Up
-                            </Link>
-                        </Grid>
-                    </Grid>
+                    <Link component={RouterLink} to={"/signin"} variant="body2">
+                        Already have an account? Sign In
+                    </Link>
                 </Box>
             </Box>
         </Container>
