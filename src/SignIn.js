@@ -75,7 +75,7 @@ export default function SignIn() {
                         required
                         fullWidth
                         name="password"
-                        label=""
+                        label="Password"
                         type="password"
                         id="password"
                         autoComplete="current-password"
