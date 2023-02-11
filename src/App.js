@@ -1,51 +1,36 @@
 import React, {useState} from 'react';
 import './App.css';
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 import Calendar from './Calendar';
 import PeriodicTodoList from './PeriodicTodoList'
 import TodoList from "./TodoList";
 import AuthProvider, {useUserStore} from "./AuthProvider";
 import {auth} from "./Firebase";
+import SignIn from "./SignIn"
+import SignUp from "./SignUp";
 
 import TaskFlow from "./TaskFlow";
 
 function App() {
     return (
       <AuthProvider>
-        <Application/>
+          <Routes>
+              <Route path={"/"} element={<Application/>} />
+              <Route path={"/signin"} element={<SignIn/>} />
+              <Route path={"/signup"} element={<SignUp/>} />
+          </Routes>
       </AuthProvider>
     );
 }
 
 function Application() {
-    const user = useUserStore();
+    const {user, loading} = useUserStore();
     return(
         <div className="App">
-            <h1 style={{textAlign:"center"}}>Day Planner</h1>
-            {user ? <DayPlanner /> : <SignIn />}
+            {loading ? <>< /> : user ? <DayPlanner /> : <Navigate replace to="/signin" />}
         </div>
     );
-}
-
-function SignIn() {
-
-    const[error, setError] = useState("");
-
-    const signInWithGoogle = () => {
-        const provider = new GoogleAuthProvider();
-        signInWithPopup(auth, provider).catch((error)=> {
-            setError(error.message);
-        });
-    };
-
-    return (
-        <div style={{textAlign:"center"}}>
-            <span>{error}</span><br/>
-            <button className="sign-in" onClick={signInWithGoogle}>Sign in with Google</button>
-        </div>
-    )
-
 }
 
 function SignOut() {
