@@ -49,8 +49,8 @@ export default function SignIn() {
                 <Typography component="h1" variant="h5">
                     Sign in
                 </Typography>
-                <span>{error}</span><br/>
-                <span>{error2}</span><br/>
+                <span>{error && error.message}</span><br/>
+                <span>{error2 && error2.message}</span><br/>
                 <IconButton
                     aria-label="Sign-in with google"
                     color="primary"
