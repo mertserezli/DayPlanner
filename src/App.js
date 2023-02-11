@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import './App.css';
-import { Routes, Route, Link, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 import Calendar from './Calendar';
 import PeriodicTodoList from './PeriodicTodoList'
@@ -11,9 +11,6 @@ import SignIn from "./SignIn"
 import SignUp from "./SignUp";
 
 import TaskFlow from "./TaskFlow";
-import {createTheme} from "@mui/material";
-
-const theme = createTheme();
 
 function App() {
     return (

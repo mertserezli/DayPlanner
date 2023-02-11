@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React from "react";
 import {auth} from "./Firebase";
 
 import {useCreateUserWithEmailAndPassword} from "react-firebase-hooks/auth";

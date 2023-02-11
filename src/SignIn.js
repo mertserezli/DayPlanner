@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React from "react";
 import {auth} from "./Firebase";
 
 import Avatar from '@mui/material/Avatar';
@@ -14,7 +14,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import IconButton from "@mui/material/IconButton";
 
-import {Link as RouterLink, MemoryRouter, useNavigate} from 'react-router-dom';
+import {Link as RouterLink, useNavigate} from 'react-router-dom';
 import {useSignInWithEmailAndPassword, useSignInWithGoogle} from "react-firebase-hooks/auth";
 
 export default function SignIn() {
@@ -50,6 +50,7 @@ export default function SignIn() {
                     Sign in
                 </Typography>
                 <span>{error}</span><br/>
+                <span>{error2}</span><br/>
                 <IconButton
                     aria-label="Sign-in with google"
                     color="primary"
