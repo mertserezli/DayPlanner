@@ -13,9 +13,10 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 
-import { Link as RouterLink} from 'react-router-dom';
+import {Link as RouterLink, useNavigate} from 'react-router-dom';
 
 export default function SignUp() {
+    const navigate = useNavigate();
     const [
         createUserWithEmailAndPassword,
         user,
@@ -26,11 +27,7 @@ export default function SignUp() {
     function handleSubmit(event){
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        console.log({
-            email: data.get('email'),
-            password: data.get('password'),
-        });
-        createUserWithEmailAndPassword(data.get('email'), data.get('password'));
+        createUserWithEmailAndPassword(String(data.get('email')), String(data.get('password'))).then((result) => navigate("/"));
     }
 
     return (

@@ -15,11 +15,12 @@ import Container from '@mui/material/Container';
 import IconButton from "@mui/material/IconButton";
 
 import {Link as RouterLink, MemoryRouter, useNavigate} from 'react-router-dom';
-import {useSignInWithGoogle} from "react-firebase-hooks/auth";
+import {useSignInWithEmailAndPassword, useSignInWithGoogle} from "react-firebase-hooks/auth";
 
 export default function SignIn() {
     const navigate = useNavigate();
     const [signInWithGoogle, , , error] = useSignInWithGoogle(auth);
+    const [signInWithEmailAndPassword, , , error2] = useSignInWithEmailAndPassword(auth);
 
     const signInWithGoogleHandler = () => {
         signInWithGoogle().then((result) => navigate("/"))
@@ -28,10 +29,7 @@ export default function SignIn() {
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        console.log({
-            email: data.get('email'),
-            password: data.get('password'),
-        });
+        signInWithEmailAndPassword(String(data.get('email')), String(data.get('password'))).then((result) => navigate("/"));
     };
 
     return (
