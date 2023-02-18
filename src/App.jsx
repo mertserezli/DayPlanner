@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import './App.css';
-import { Routes, Route, Navigate } from "react-router-dom";
+import {Navigate, Route, Routes} from "react-router-dom";
 
 import Calendar from './Calendar';
 import PeriodicTodoList from './PeriodicTodoList'
@@ -9,6 +9,7 @@ import AuthProvider, {useUserStore} from "./AuthProvider";
 import {auth} from "./Firebase";
 import SignIn from "./SignIn"
 import SignUp from "./SignUp";
+import ForgotPassword from "./ForgotPassword";
 
 import TaskFlow from "./TaskFlow";
 
@@ -19,6 +20,7 @@ function App() {
               <Route path={"/"} element={<Application/>} />
               <Route path={"/signin"} element={<SignIn/>} />
               <Route path={"/signup"} element={<SignUp/>} />
+              <Route path={"/forgotpassword"} element={<ForgotPassword/>} />
           </Routes>
       </AuthProvider>
     );
