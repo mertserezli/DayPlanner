@@ -23,13 +23,19 @@ export default function SignIn() {
     const [signInWithEmailAndPassword, , , error2] = useSignInWithEmailAndPassword(auth);
 
     const signInWithGoogleHandler = () => {
-        signInWithGoogle().then((result) => navigate("/"))
+        signInWithGoogle().then((result) =>{
+            if(result.user)
+                navigate("/")
+        })
     };
 
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        signInWithEmailAndPassword(String(data.get('email')), String(data.get('password'))).then((result) => navigate("/"));
+        signInWithEmailAndPassword(String(data.get('email')), String(data.get('password'))).then((result) => {
+            if(result.user)
+                navigate("/")
+        });
     };
 
     return (
