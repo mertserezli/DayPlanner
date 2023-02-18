@@ -1,7 +1,8 @@
 import { initializeApp } from "firebase/app";
-import { getAuth} from 'firebase/auth';
+import { getAuth, connectAuthEmulator} from 'firebase/auth';
 import {
     getFirestore,
+    connectFirestoreEmulator,
     collection,
     addDoc,
     updateDoc,
@@ -23,6 +24,14 @@ const firebaseConfig = {
 export const firebase = initializeApp(firebaseConfig);
 export const firestore = getFirestore(firebase);
 export const auth = getAuth(firebase);
+
+// ADD THESE LINES
+if (location.hostname === "localhost") {
+    console.log("localhost detected!");
+    connectAuthEmulator(auth, "http://localhost:9099");
+    connectFirestoreEmulator(firestore, "localhost", 8080);
+}
+
 
 export function getTodoListQuery(){
     return collection(firestore, 'Users', auth.currentUser.uid, 'Todo')
