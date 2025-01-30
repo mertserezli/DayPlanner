@@ -8,6 +8,12 @@ import Description from "./Description";
 import useSortableData from "./UseSortableData";
 
 import {getTodoListQuery, removeTodoItem, updateTodoItem, updateTodoDescription, addTodoItem} from "./Firebase";
+import EditIcon from "@mui/icons-material/Edit";
+import IconButton from "@mui/material/IconButton";
+import DeleteIcon from "@mui/icons-material/Delete";
+import SaveIcon from "@mui/icons-material/Save";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import Button from "@mui/material/Button";
 
 function TodoList() {
     const [TodoItems] = useCollection(getTodoListQuery());
@@ -78,8 +84,12 @@ function TodoItem({item}){
                     <td onClick={() => setOpen(true)}>{item.value}</td>
                     <td onClick={() => setOpen(true)}>{item.time}</td>
                     <td>
-                        <button onClick={() => setReadMode(false)}>edit</button>
-                        <button onClick={handleRemoveTodo}>delete</button>
+                        <IconButton aria-label="edit a to-do item" size="small" onClick={() => setReadMode(false)}>
+                            <EditIcon />
+                        </IconButton>
+                        <IconButton aria-label="delete a to-do item" size="small" onClick={handleRemoveTodo}>
+                            <DeleteIcon />
+                        </IconButton>
                     </td>
                 </tr>
                 :
@@ -89,8 +99,12 @@ function TodoItem({item}){
                     <td><input type="number" value={value} onChange={(e) => setValue(e.target.value)}/></td>
                     <td><input type="number" value={time} onChange={(e) => setTime(e.target.value)}/></td>
                     <td>
-                        <button onClick={saveChanges}>save</button>
-                        <button onClick={handleRemoveTodo}>delete</button>
+                        <IconButton aria-label="save the to-do item" size="small" onClick={saveChanges}>
+                            <SaveIcon />
+                        </IconButton>
+                        <IconButton aria-label="delete a to-do item" size="small" onClick={handleRemoveTodo}>
+                            <DeleteIcon />
+                        </IconButton>
                     </td>
                 </tr>
             }
@@ -121,7 +135,9 @@ function AddTodo(){
 
     return (
         <>
-            <button onClick={()=>setOpen(true)}>Add</button>
+            <Button variant="contained" color="primary" startIcon={<AddCircleIcon />} onClick={()=>setOpen(true)}>
+                Add To-Do
+            </Button>
             <Modal
                 open={open}
                 onClose={handleClose}

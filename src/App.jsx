@@ -12,6 +12,8 @@ import SignUp from "./SignUp";
 import ForgotPassword from "./ForgotPassword";
 
 import TaskFlow from "./TaskFlow";
+import WavesIcon from '@mui/icons-material/Waves';
+import Button from "@mui/material/Button";
 
 function App() {
     return (
@@ -54,7 +56,9 @@ function DayPlanner() {
                 <Calendar/>
             </div>
             <div className={"Todolist"}>
-                <button onClick={()=>setIsFlow(!isFlow)}>{isFlow ? "Stop Flow" : "Start Flow"}</button>
+                <Button variant="contained" color="primary" startIcon={<WavesIcon />} onClick={()=>setIsFlow(!isFlow)}>
+                    {isFlow ? "Stop Flow" : "Start Flow"}
+                </Button>
                 {!isFlow ?
                     <TodoList/>
                     :

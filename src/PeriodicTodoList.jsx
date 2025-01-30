@@ -4,7 +4,14 @@ import Description from './Description'
 
 import {useCollection} from "react-firebase-hooks/firestore";
 import React, {useState} from "react";
+
 import Modal from '@mui/material/Modal';
+import IconButton from '@mui/material/IconButton';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import SaveIcon from '@mui/icons-material/Save';
+import Button from "@mui/material/Button";
 
 function PeriodicTodoList() {
     const [TodoItems] = useCollection(getPeriodicTodoListQuery());
@@ -70,8 +77,12 @@ function PeriodicItem({item}){
                     <td onClick={() => setOpen(true)}><PeriodicItemNameStyler period={item.period}>{item.name}</PeriodicItemNameStyler></td>
                     <td onClick={() => setOpen(true)}>{item.period}</td>
                     <td>
-                        <button onClick={() => setReadMode(false)}>edit</button>
-                        <button onClick={handleRemovePeriodicTodo}>delete</button>
+                        <IconButton aria-label="edit a periodic item" size="small" onClick={() => setReadMode(false)}>
+                            <EditIcon />
+                        </IconButton>
+                        <IconButton aria-label="delete a periodic item" size="small" onClick={handleRemovePeriodicTodo}>
+                            <DeleteIcon />
+                        </IconButton>
                     </td>
                 </tr>
                 :
@@ -79,8 +90,12 @@ function PeriodicItem({item}){
                     <td><input value={title} onChange={(e) => setTitle(e.target.value)}/></td>
                     <td><input value={period} onChange={(e) => setPeriod(e.target.value)}/></td>
                     <td>
-                        <button onClick={saveChanges}>save</button>
-                        <button onClick={handleRemovePeriodicTodo}>delete</button>
+                        <IconButton aria-label="save the periodic item" size="small" onClick={saveChanges}>
+                            <SaveIcon />
+                        </IconButton>
+                        <IconButton aria-label="delete a periodic item" size="small" onClick={handleRemovePeriodicTodo}>
+                            <DeleteIcon />
+                        </IconButton>
                     </td>
                 </tr>
             }
@@ -128,7 +143,9 @@ function AddPeriodicTodo(){
 
     return (
         <>
-            <button onClick={()=>setOpen(true)}>Add Periodic</button>
+            <Button variant="contained" color="primary" startIcon={<AddCircleIcon />} onClick={()=>setOpen(true)}>
+                Add Periodic
+            </Button>
             <Modal
                 open={open}
                 onClose={handleClose}
