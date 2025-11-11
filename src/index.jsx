@@ -5,17 +5,33 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 import {BrowserRouter} from "react-router-dom";
-import {createTheme, ThemeProvider} from "@mui/material";
+import CssBaseline from "@mui/material/CssBaseline";
+import {
+    Experimental_CssVarsProvider as CssVarsProvider,
+    experimental_extendTheme as extendTheme,
+} from '@mui/material/styles';
 
-const theme = createTheme();
+function Root() {
+    const theme = extendTheme({
+        colorSchemes: {
+            light: true,
+            dark: true,
+        },
+    });
+
+    return (
+        <CssVarsProvider theme={theme}>
+            <CssBaseline />
+            <BrowserRouter>
+                <App/>
+            </BrowserRouter>
+        </CssVarsProvider>
+    );
+}
 
 ReactDOM.render(
   <React.StrictMode>
-      <ThemeProvider theme={theme}>
-          <BrowserRouter>
-              <App />
-          </BrowserRouter>
-      </ThemeProvider>
+      <Root />
   </React.StrictMode>,
   document.getElementById('root')
 );
