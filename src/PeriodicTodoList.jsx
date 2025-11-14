@@ -21,10 +21,15 @@ import {
     TableContainer,
     TableHead,
     TableRow,
-    TextField
+    TextField,
+    Chip, Stack, FormControl, InputLabel, Select, MenuItem, Checkbox, ListItemText,
 } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
+
+const ALL_DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const WEEKDAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+const WEEKENDS = ['Saturday', 'Sunday'];
 
 function PeriodicTodoList() {
     const [TodoItems] = useCollection(getPeriodicTodoListQuery());
@@ -75,20 +80,75 @@ function PeriodicTodoList() {
 }
 
 function PeriodicItem({item}){
+    const weekdayOptions = [
+        'Weekdays',
+        'Weekends',
+        'Daily',
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday',
+        'Sunday',
+    ];
+
     const [readMode, setReadMode] = useState(true);
 
     const [title, setTitle] = useState(item.name);
-    const [period, setPeriod] = useState(item.period);
+    const [rawPeriods, setRawPeriods] = useState(() =>
+        Array.isArray(item.period)
+            ? item.period
+            : item.period.split(/[\s,]+/).filter(Boolean)
+    );
+
+    const normalizedPeriod = rawPeriods.filter(period => period !== 'Weekdays' && period !== 'Weekends' && period !== 'Daily');
 
     const [open, setOpen] = useState(false);
+
+    const handleToggle = (period) => {
+        let updated = [...rawPeriods];
+
+        const hasDays = (days) => days.every(d => updated.includes(d));
+        const removeDays = (days) => updated.filter(p => !days.includes(p));
+        const addDays = (days) => Array.from(new Set([...updated, ...days]));
+
+        if (period === 'Daily') {
+            setRawPeriods(rawPeriods.includes('Daily') ? [] : [...weekdayOptions]);
+            return;
+        }
+
+        if (period === 'Weekdays') {
+            updated = rawPeriods.includes('Weekdays')
+                ? removeDays([...WEEKDAYS, 'Weekdays', 'Daily'])
+                : addDays([...WEEKDAYS, 'Weekdays']);
+        } else if (period === 'Weekends') {
+            updated = rawPeriods.includes('Weekends')
+                ? removeDays([...WEEKENDS, 'Weekends', 'Daily'])
+                : addDays([...WEEKENDS, 'Weekends']);
+        } else {
+            if (rawPeriods.includes(period)) {
+                updated = removeDays([period, 'Daily']);
+                if (WEEKDAYS.includes(period)) updated = updated.filter(p => p !== 'Weekdays');
+                if (WEEKENDS.includes(period)) updated = updated.filter(p => p !== 'Weekends');
+            } else {
+                updated = addDays([period]);
+            }
+        }
+        if (hasDays(ALL_DAYS)) updated = [...weekdayOptions];
+        else if (hasDays(WEEKDAYS)) updated = addDays(['Weekdays']);
+        else if (hasDays(WEEKENDS)) updated = addDays(['Weekends']);
+
+        setRawPeriods(updated);
+    };
 
     async function handleRemovePeriodicTodo(){
         removePeriodicTodoItem(item.id)
     }
 
-    async function saveChanges(){
-        updatePeriodicTodoItem(item.id, title, period);
-        setReadMode(true)
+    async function saveChanges() {
+        updatePeriodicTodoItem(item.id, title, normalizedPeriod.join(', '));
+        setReadMode(true);
     }
 
     async function saveDescription(description){
@@ -113,13 +173,15 @@ function PeriodicItem({item}){
                         onClick={() => setOpen(true)}
                         sx={{ cursor: 'pointer', '&:hover': { backgroundColor: 'action.hover' } }}
                     >
-                        <PeriodicItemNameStyler period={item.period}>{item.name}</PeriodicItemNameStyler>
+                        {item.name}
                     </TableCell>
                     <TableCell
                         onClick={() => setOpen(true)}
                         sx={{ cursor: 'pointer', '&:hover': { backgroundColor: 'action.hover' } }}
                     >
-                        {item.period}
+                        <Stack direction="row" spacing={1} alignItems="center">
+                            <PeriodicChip period={item.period} />
+                        </Stack>
                     </TableCell>
                     <TableCell align="center">
                         <IconButton aria-label="edit a periodic item" size="small" onClick={() => setReadMode(false)}>
@@ -142,11 +204,21 @@ function PeriodicItem({item}){
                         />
                     </TableCell>
                     <TableCell>
-                        <TextField
-                            value={period}
-                            onChange={(e) => setPeriod(e.target.value)}
-                            variant="standard"
-                        />
+                        <FormControl fullWidth variant="standard">
+                            <Select
+                                labelId={`period-label-${item.id}`}
+                                multiple
+                                value={rawPeriods}
+                                renderValue={() => parsePeriod(normalizedPeriod.join(', ')).label}
+                                variant="standard">
+                                {weekdayOptions.map((day) => (
+                                    <MenuItem key={day} value={day} onClick={() => handleToggle(day)}>
+                                        <Checkbox checked={rawPeriods.includes(day)} />
+                                        <ListItemText primary={day} />
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
                     </TableCell>
                     <TableCell align="center">
                         <IconButton aria-label="save the periodic item" size="small" onClick={saveChanges}>
@@ -162,20 +234,53 @@ function PeriodicItem({item}){
     )
 }
 
-function PeriodicItemNameStyler(props){
-    const period = props.period;
-    const toDayName = {0:'sunday', 1:'monday', 2:'tuesday', 3:'wednesday', 4:'thursday', 5:'friday', 6:'saturday'};
+function parsePeriod(periodText) {
+    const periodsParts = periodText.split(/[\s,]+/); // split by comma or space
+    const dayIndices = periodsParts
+        .map(day => ALL_DAYS.indexOf(day))
+        .filter(index => index !== -1);
 
-    const today = new Date();
-    const isToday = period.toLowerCase().includes(toDayName[today.getDay()]) || period.toLowerCase().includes("daily");
+    const periodsSet = new Set(periodsParts);
 
-    return(<>
-        {isToday ?
-            <span style={{color:"Crimson"}}>{props.children}</span>
-            :
-            <span>{props.children}</span>
-        }
-        </>
+    if (ALL_DAYS.every(d => periodsSet.has(d)))
+        return { type: "daily", dayIndices: [], label: "Daily" }
+
+    let label = [...periodsParts]
+    if (WEEKDAYS.every(d => periodsSet.has(d))){
+        label = label.filter(d => !WEEKDAYS.includes(d));
+        label.push('Weekdays');
+    }
+    if (WEEKENDS.every(d => periodsSet.has(d))){
+        label = label.filter(d => !WEEKENDS.includes(d));
+        label.push('Weekends');
+    }
+    label = [...new Set(label)].join(', ')
+
+    if (dayIndices.length > 0) return { type: "weekly", dayIndices, label};
+    return { type: "unknown" };
+}
+
+function PeriodicChip({ period }) {
+    const parsed = parsePeriod(period);
+    const todayIndex = new Date().getDay();
+    const isToday =
+        parsed.type === "daily" ||
+        (parsed.type === "weekly" && parsed.dayIndices.includes(todayIndex));
+
+    const label =
+        parsed.type === "daily"
+            ? "Daily"
+            : parsed.type === "weekly"
+                ? `Every ${parsed.label}`
+                : period;
+
+    return (
+        <Chip
+            label={label}
+            size="small"
+            color={isToday ? "error" : "default"}
+            variant={isToday ? "filled" : "outlined"}
+        />
     );
 }
 
