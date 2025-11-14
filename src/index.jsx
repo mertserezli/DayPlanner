@@ -4,34 +4,35 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-import {BrowserRouter} from "react-router-dom";
-import CssBaseline from "@mui/material/CssBaseline";
+import { BrowserRouter } from 'react-router-dom';
+import CssBaseline from '@mui/material/CssBaseline';
 import {
-    Experimental_CssVarsProvider as CssVarsProvider,
-    experimental_extendTheme as extendTheme,
+  Experimental_CssVarsProvider as CssVarsProvider,
+  experimental_extendTheme as extendTheme,
 } from '@mui/material/styles';
 
 function Root() {
-    const theme = extendTheme({
-        colorSchemes: {
-            light: true,
-            dark: true,
-        },
-    });
+  const theme = extendTheme({
+    colorSchemes: {
+      light: true,
+      dark: true,
+    },
+  });
 
-    return (
-        <CssVarsProvider theme={theme}>
-            <CssBaseline />
-            <BrowserRouter>
-                <App/>
-            </BrowserRouter>
-        </CssVarsProvider>
-    );
+  return (
+    <CssVarsProvider theme={theme}>
+      <CssBaseline />
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </CssVarsProvider>
+  );
 }
 
+// eslint-disable-next-line react/no-deprecated
 ReactDOM.render(
   <React.StrictMode>
-      <Root />
+    <Root />
   </React.StrictMode>,
   document.getElementById('root')
 );
