@@ -99,7 +99,7 @@ function TodoList() {
                   Score
                 </TableSortLabel>
               </TableCell>
-              <TableCell align="right">
+              <TableCell align="right" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
                 <TableSortLabel
                   active={sortConfig?.key === 'value'}
                   direction={sortConfig?.key === 'value' ? sortConfig.direction : 'asc'}
@@ -108,7 +108,7 @@ function TodoList() {
                   Value
                 </TableSortLabel>
               </TableCell>
-              <TableCell align="right">
+              <TableCell align="right" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
                 <TableSortLabel
                   active={sortConfig?.key === 'time'}
                   direction={sortConfig?.key === 'time' ? sortConfig.direction : 'asc'}
@@ -188,9 +188,18 @@ function TodoItem({ item }) {
           component="th"
           scope="row"
           onClick={() => setDescriptionDialogOpen(true)}
-          sx={{ cursor: 'pointer', '&:hover': { backgroundColor: 'action.hover' } }}
+          sx={{
+            cursor: 'pointer',
+            '&:hover': { backgroundColor: 'action.hover' },
+            maxWidth: 200,
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}
         >
-          {item.name}
+          <Tooltip title={item.name}>
+            <span>{item.name}</span>
+          </Tooltip>
         </TableCell>
         <TableCell
           align="right"
@@ -202,15 +211,26 @@ function TodoItem({ item }) {
         <TableCell
           align="right"
           onClick={() => setDescriptionDialogOpen(true)}
-          sx={{ cursor: 'pointer', '&:hover': { backgroundColor: 'action.hover' } }}
+          sx={{
+            cursor: 'pointer',
+            '&:hover': { backgroundColor: 'action.hover' },
+            display: { xs: 'none', sm: 'table-cell' },
+          }}
         >
           {item.value}
         </TableCell>
+        <TableCell
+          align="right"
+          onClick={() => setDescriptionDialogOpen(true)}
+          sx={{
+            cursor: 'pointer',
+            '&:hover': { backgroundColor: 'action.hover' },
+            display: { xs: 'none', sm: 'table-cell' },
+          }}
+        >
+          {item.time}
+        </TableCell>
         <TableCell align="right" sx={{ position: 'relative' }}>
-          <span onClick={() => setDescriptionDialogOpen(true)} style={{ cursor: 'pointer' }}>
-            {item.time}
-          </span>
-
           <IconButton
             aria-label="more actions"
             size="small"
@@ -225,9 +245,7 @@ function TodoItem({ item }) {
               right: 0,
               zIndex: 1,
               opacity: { xs: 1, sm: 0 },
-              '.MuiTableRow-root:hover &': {
-                opacity: 1,
-              },
+              '.MuiTableRow-root:hover &': { opacity: 1 },
               transition: 'opacity 0.2s ease-in-out',
             }}
           >
