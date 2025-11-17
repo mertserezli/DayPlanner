@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
 import Button from '@mui/material/Button';
@@ -14,17 +14,19 @@ DescriptionDialog.propTypes = {
 function DescriptionDialog({ saveDescription, item, open, onClose }) {
   const [description, setDescription] = useState(item.description);
 
+  useEffect(() => {
+    if (open) {
+      setDescription(item.description || '');
+    }
+  }, [open]);
+
   function handleSaveDescription() {
+    onClose();
     saveDescription(description);
   }
 
-  function handleClose() {
-    onClose();
-    setDescription(item.description);
-  }
-
   return (
-    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>Edit Description</DialogTitle>
       <DialogContent>
         <TextField
@@ -38,7 +40,7 @@ function DescriptionDialog({ saveDescription, item, open, onClose }) {
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose}>Cancel</Button>
+        <Button onClick={onClose}>Cancel</Button>
         <Button type="submit" onClick={handleSaveDescription} variant="contained">
           Save
         </Button>
