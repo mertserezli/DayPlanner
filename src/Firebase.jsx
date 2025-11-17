@@ -1,4 +1,5 @@
 import { initializeApp } from 'firebase/app';
+import { getAnalytics, logEvent } from 'firebase/analytics';
 import { getAuth, connectAuthEmulator } from 'firebase/auth';
 import {
   getFirestore,
@@ -31,6 +32,13 @@ if (location.hostname === 'localhost') {
   connectFirestoreEmulator(firestore, 'localhost', 8080);
 }
 
+let analytics;
+if (typeof window !== 'undefined') {
+  analytics = getAnalytics(firebase);
+}
+
+export { analytics };
+
 export function getTodoListQuery() {
   return collection(firestore, 'Users', auth.currentUser.uid, 'Todo');
 }
@@ -53,6 +61,16 @@ export function updateTodoDescription(id, description) {
 }
 
 export function addTodoItem(title, value, time, description) {
+  if (analytics) {
+    logEvent(analytics, 'todo_add', {
+      id: 'new',
+      name: title,
+      value: value,
+      time: time,
+      description: description,
+    });
+  }
+
   addDoc(getTodoListQuery(), {
     name: title,
     value: parseInt(value),
