@@ -104,5 +104,20 @@ export function addPeriodicTodoItem(title, period, description) {
 }
 
 export function getCalendarItemsQuery() {
-  return doc(firestore, 'Users', auth.currentUser.uid, 'Calendar', 'date');
+  return collection(firestore, 'Users', auth.currentUser.uid, 'Calendar');
+}
+
+export function removeCalendarItem(id) {
+  deleteDoc(doc(getCalendarItemsQuery(), id));
+}
+
+export function updateCalendarItem(changed) {
+  Object.keys(changed).forEach((id) => {
+    const docRef = doc(firestore, 'Users', auth.currentUser.uid, 'Calendar', id);
+    updateDoc(docRef, changed[id]);
+  });
+}
+
+export function addCalendarItem(added) {
+  addDoc(getCalendarItemsQuery(), added);
 }
