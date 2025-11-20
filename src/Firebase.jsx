@@ -87,8 +87,12 @@ export function removePeriodicTodoItem(id) {
   deleteDoc(doc(getPeriodicTodoListQuery(), id));
 }
 
-export function updatePeriodicTodoItem(id, title, period) {
-  updateDoc(doc(getPeriodicTodoListQuery(), id), { name: title, period: period });
+export function updatePeriodicTodoItem(id, title, period, description) {
+  updateDoc(doc(getPeriodicTodoListQuery(), id), {
+    name: title,
+    period: period,
+    description: description,
+  });
 }
 
 export function updatePeriodicTodoDescriptionItem(id, description) {
