@@ -1,10 +1,13 @@
 import React from 'react';
+import { Link as RouterLink, NavLink } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import { AppBar, Toolbar, Typography, Stack, IconButton, Tooltip } from '@mui/material';
+import Link from '@mui/material/Link';
 import TodayIcon from '@mui/icons-material/Today';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useColorScheme } from '@mui/material/styles';
 import { useUserStore } from './AuthProvider';
 import { auth } from './Firebase';
@@ -17,14 +20,35 @@ export default function HeaderBar({ showSignOut = false }) {
   return (
     <AppBar position="static" color="default" elevation={1}>
       <Toolbar sx={{ justifyContent: 'space-between' }}>
-        <Stack direction="row" alignItems="center" spacing={1}>
-          <TodayIcon color="primary" />
-          <Typography variant="h6" component="div">
-            Day Planner
-          </Typography>
-        </Stack>
+        <Link
+          component={RouterLink}
+          to="/"
+          underline="none"
+          color="inherit"
+          sx={{ fontWeight: 600 }}
+        >
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <TodayIcon />
+            <Typography variant="h6" component="div">
+              Day Planner
+            </Typography>
+          </Stack>
+        </Link>
         <Stack direction="row" spacing={1}>
           <ThemeToggle />
+          <Tooltip title="Profile">
+            <IconButton
+              component={NavLink}
+              to="/profile"
+              color="primary"
+              aria-label="profile"
+              style={({ isActive }) => ({
+                color: isActive ? '#1976d2' : 'inherit',
+              })}
+            >
+              <AccountCircleIcon />
+            </IconButton>
+          </Tooltip>
           {showSignOut && <SignOut />}
         </Stack>
       </Toolbar>

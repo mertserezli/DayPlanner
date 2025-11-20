@@ -15,20 +15,29 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import IconButton from '@mui/material/IconButton';
 
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Link as RouterLink, Navigate, useNavigate } from 'react-router-dom';
 import { useSignInWithEmailAndPassword, useSignInWithGoogle } from 'react-firebase-hooks/auth';
 import { InputAdornment, Tooltip } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import HeaderBar from './HeaderBar';
+import { useUserStore } from './AuthProvider';
 
 export default function SignIn() {
   const navigate = useNavigate();
+  const { user, loading } = useUserStore();
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
   const [isCapsLockOn, setIsCapsLockOn] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [signInWithGoogle, , , error] = useSignInWithGoogle(auth);
   const [signInWithEmailAndPassword, , , error2] = useSignInWithEmailAndPassword(auth);
+
+  if (loading) {
+    return <Typography>Loading...</Typography>;
+  }
+  if (user) {
+    return <Navigate replace to="/" />;
+  }
 
   const handleEmailChange = (event) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
