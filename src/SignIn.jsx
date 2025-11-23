@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { auth } from './Firebase';
+import { signInAnonymously } from 'firebase/auth';
 
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -11,6 +12,7 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import GoogleIcon from '@mui/icons-material/Google';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import PersonIcon from '@mui/icons-material/Person';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import IconButton from '@mui/material/IconButton';
@@ -63,6 +65,16 @@ export default function SignIn() {
     });
   };
 
+  const signInAnonymouslyHandler = () => {
+    signInAnonymously(auth)
+      .then((result) => {
+        if (result.user) navigate('/');
+      })
+      .catch((err) => {
+        console.error('Anonymous sign-in error:', err);
+      });
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -96,13 +108,26 @@ export default function SignIn() {
           <br />
           <span>{error2 && error2.message}</span>
           <br />
-          <IconButton
-            aria-label="Sign-in with google"
-            color="primary"
+          <Button
+            fullWidth
+            variant="outlined"
+            sx={{ mt: 2 }}
+            startIcon={<GoogleIcon />}
             onClick={signInWithGoogleHandler}
           >
-            <GoogleIcon />
-          </IconButton>
+            Sign in with Google
+          </Button>
+
+          <Button
+            fullWidth
+            variant="outlined"
+            sx={{ mt: 2 }}
+            startIcon={<PersonIcon />}
+            onClick={signInAnonymouslyHandler}
+          >
+            Continue as Guest
+          </Button>
+
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
             <TextField
               margin="normal"
