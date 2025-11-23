@@ -23,8 +23,15 @@ import {
   LinearProgress,
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import HeaderBar from './HeaderBar';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+
+import HeaderBar from './HeaderBar';
+import {
+  evaluatePasswordStrength,
+  getPasswordStrengthProgressValue,
+  passwordStrengthColorMap,
+  passwordStrengthHintMap,
+} from './passwordStrength';
 
 export default function Profile() {
   const { user, loading } = useUserStore();
@@ -51,66 +58,6 @@ export default function Profile() {
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
-  };
-
-  const passwordStrengthColorMap = {
-    'Very Weak': '#d32f2f',
-    Weak: '#f57c00',
-    Moderate: '#fbc02d',
-    Strong: '#388e3c',
-    'Very Strong': '#2e7d32',
-  };
-  const passwordStrengthHintMap = {
-    'Very Weak': 'Try adding uppercase letters, numbers, and symbols.',
-    Weak: 'Include more character types for better security.',
-    Moderate: 'Good start! Add symbols or longer length.',
-    Strong: 'Strong password. Consider making it even longer.',
-    'Very Strong': 'Excellent! Your password is very secure.',
-  };
-  const evaluatePasswordStrength = (pwd) => {
-    let score = 0;
-    if (pwd.length >= 8) score++;
-    if (/[A-Z]/.test(pwd)) score++;
-    if (/[a-z]/.test(pwd)) score++;
-    if (/[0-9]/.test(pwd)) score++;
-    if (/[^A-Za-z0-9]/.test(pwd)) score++;
-
-    switch (score) {
-      case 0:
-      case 1:
-        setPasswordStrength('Very Weak');
-        break;
-      case 2:
-        setPasswordStrength('Weak');
-        break;
-      case 3:
-        setPasswordStrength('Moderate');
-        break;
-      case 4:
-        setPasswordStrength('Strong');
-        break;
-      case 5:
-        setPasswordStrength('Very Strong');
-        break;
-      default:
-        setPasswordStrength('');
-    }
-  };
-  const getPasswordStrengthProgressValue = () => {
-    switch (passwordStrength) {
-      case 'Very Weak':
-        return 20;
-      case 'Weak':
-        return 40;
-      case 'Moderate':
-        return 60;
-      case 'Strong':
-        return 80;
-      case 'Very Strong':
-        return 100;
-      default:
-        return 0;
-    }
   };
 
   const handlePasswordChange = async (e) => {
@@ -185,9 +132,7 @@ export default function Profile() {
                 type={showPassword ? 'text' : 'password'}
                 value={currentPassword}
                 onChange={(e) => {
-                  const pwd = e.target.value;
-                  setCurrentPassword(pwd);
-                  evaluatePasswordStrength(pwd);
+                  setCurrentPassword(e.target.value);
                 }}
                 sx={{ mb: 2 }}
                 InputProps={{
@@ -206,7 +151,11 @@ export default function Profile() {
                 label="New Password"
                 type={showPassword ? 'text' : 'password'}
                 value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
+                onChange={(e) => {
+                  const pwd = e.target.value;
+                  setNewPassword(e.target.value);
+                  setPasswordStrength(evaluatePasswordStrength(pwd));
+                }}
                 onKeyDown={(e) =>
                   setIsCapsLockOn(e.getModifierState && e.getModifierState('CapsLock'))
                 }
@@ -232,7 +181,7 @@ export default function Profile() {
               <Tooltip title={passwordStrengthHintMap[passwordStrength] || ''}>
                 <LinearProgress
                   variant="determinate"
-                  value={getPasswordStrengthProgressValue()}
+                  value={getPasswordStrengthProgressValue(passwordStrength)}
                   sx={{
                     mt: 1,
                     height: 8,
@@ -279,7 +228,7 @@ export default function Profile() {
                 onChange={(e) => {
                   const pwd = e.target.value;
                   setUpgradePassword(pwd);
-                  evaluatePasswordStrength(pwd);
+                  setPasswordStrength(evaluatePasswordStrength(pwd));
                 }}
                 onKeyDown={(e) =>
                   setIsCapsLockOn(e.getModifierState && e.getModifierState('CapsLock'))
@@ -306,7 +255,7 @@ export default function Profile() {
               <Tooltip title={passwordStrengthHintMap[passwordStrength] || ''}>
                 <LinearProgress
                   variant="determinate"
-                  value={getPasswordStrengthProgressValue()}
+                  value={getPasswordStrengthProgressValue(passwordStrength)}
                   sx={{
                     mt: 1,
                     height: 8,

@@ -19,7 +19,7 @@ import IconButton from '@mui/material/IconButton';
 
 import { Link as RouterLink, Navigate, useNavigate } from 'react-router-dom';
 import { useSignInWithEmailAndPassword, useSignInWithGoogle } from 'react-firebase-hooks/auth';
-import { InputAdornment, Tooltip } from '@mui/material';
+import { Divider, InputAdornment, Tooltip } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import HeaderBar from './HeaderBar';
 import { useUserStore } from './AuthProvider';
@@ -117,7 +117,6 @@ export default function SignIn() {
           >
             Sign in with Google
           </Button>
-
           <Button
             fullWidth
             variant="outlined"
@@ -127,6 +126,10 @@ export default function SignIn() {
           >
             Continue as Guest
           </Button>
+
+          <Divider sx={{ mt: 2, width: '100%' }} textAlign="center">
+            or
+          </Divider>
 
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
             <TextField

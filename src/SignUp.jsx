@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link as RouterLink, Navigate, useNavigate } from 'react-router-dom';
 import { auth } from './Firebase';
 
 import { useCreateUserWithEmailAndPassword } from 'react-firebase-hooks/auth';
@@ -12,14 +13,19 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-
-import { Link as RouterLink, Navigate, useNavigate } from 'react-router-dom';
 import { InputAdornment, LinearProgress, Tooltip } from '@mui/material';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import IconButton from '@mui/material/IconButton';
+
 import HeaderBar from './HeaderBar';
 import { useUserStore } from './AuthProvider';
+import {
+  evaluatePasswordStrength,
+  getPasswordStrengthProgressValue,
+  passwordStrengthColorMap,
+  passwordStrengthHintMap,
+} from './passwordStrength';
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -51,69 +57,6 @@ export default function SignUp() {
       setEmailError('Please enter a valid email address');
     } else {
       setEmailError('');
-    }
-  };
-
-  const passwordStrengthColorMap = {
-    'Very Weak': '#d32f2f', // red
-    Weak: '#f57c00', // orange
-    Moderate: '#fbc02d', // yellow
-    Strong: '#388e3c', // green
-    'Very Strong': '#2e7d32', // dark green
-  };
-
-  const passwordStrengthHintMap = {
-    'Very Weak': 'Try adding uppercase letters, numbers, and symbols.',
-    Weak: 'Include more character types for better security.',
-    Moderate: 'Good start! Add symbols or longer length.',
-    Strong: 'Strong password. Consider making it even longer.',
-    'Very Strong': 'Excellent! Your password is very secure.',
-  };
-
-  const evaluatePasswordStrength = (pwd) => {
-    let score = 0;
-    if (pwd.length >= 8) score++;
-    if (/[A-Z]/.test(pwd)) score++;
-    if (/[a-z]/.test(pwd)) score++;
-    if (/[0-9]/.test(pwd)) score++;
-    if (/[^A-Za-z0-9]/.test(pwd)) score++;
-
-    switch (score) {
-      case 0:
-      case 1:
-        setPasswordStrength('Very Weak');
-        break;
-      case 2:
-        setPasswordStrength('Weak');
-        break;
-      case 3:
-        setPasswordStrength('Moderate');
-        break;
-      case 4:
-        setPasswordStrength('Strong');
-        break;
-      case 5:
-        setPasswordStrength('Very Strong');
-        break;
-      default:
-        setPasswordStrength('');
-    }
-  };
-
-  const getPasswordStrengthProgressValue = () => {
-    switch (passwordStrength) {
-      case 'Very Weak':
-        return 20;
-      case 'Weak':
-        return 40;
-      case 'Moderate':
-        return 60;
-      case 'Strong':
-        return 80;
-      case 'Very Strong':
-        return 100;
-      default:
-        return 0;
     }
   };
 
@@ -194,7 +137,7 @@ export default function SignUp() {
               onChange={(e) => {
                 const pwd = e.target.value;
                 setPassword(pwd);
-                evaluatePasswordStrength(pwd);
+                setPasswordStrength(evaluatePasswordStrength(pwd));
               }}
               onKeyDown={(e) => {
                 setIsCapsLockOn(e.getModifierState && e.getModifierState('CapsLock'));
@@ -227,7 +170,7 @@ export default function SignUp() {
             <Tooltip title={passwordStrengthHintMap[passwordStrength] || ''}>
               <LinearProgress
                 variant="determinate"
-                value={getPasswordStrengthProgressValue()}
+                value={getPasswordStrengthProgressValue(passwordStrength)}
                 sx={{
                   mt: 1,
                   height: 8,

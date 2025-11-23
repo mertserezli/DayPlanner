@@ -232,7 +232,7 @@ function TodoItem({ item }) {
         </TableCell>
         <TableCell align="right" sx={{ position: 'relative' }}>
           <IconButton
-            aria-label="more actions"
+            aria-label="actions"
             size="small"
             onClick={(e) => {
               e.stopPropagation();
@@ -250,7 +250,7 @@ function TodoItem({ item }) {
             }}
           >
             {isDesktop ? (
-              <Tooltip title="More actions">
+              <Tooltip title="Actions">
                 <MoreVertIcon />
               </Tooltip>
             ) : (

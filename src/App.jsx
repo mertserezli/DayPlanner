@@ -5,7 +5,7 @@ import Calendar from './Calendar';
 import PeriodicTodoList from './PeriodicTodoList';
 import TodoList from './TodoList';
 import AuthProvider, { useUserStore } from './AuthProvider';
-import { getPeriodicTodoListQuery, getTodoListQuery } from './Firebase';
+import { getTodoListQuery } from './Firebase';
 import SignIn from './SignIn';
 import SignUp from './SignUp';
 import ForgotPassword from './ForgotPassword';
@@ -51,10 +51,8 @@ function DayPlanner() {
   const [isFlow, setIsFlow] = useState(false);
   const [tabIndex, setTabIndex] = useState(1);
   const [todoItems] = useCollection(getTodoListQuery());
-  const [periodicItems] = useCollection(getPeriodicTodoListQuery());
 
   const todoCount = todoItems?.docs.length || 0;
-  const periodicCount = periodicItems?.docs.length || 0;
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -99,14 +97,7 @@ function DayPlanner() {
                 </Badge>
               }
             />
-            <Tab
-              icon={<RepeatIcon />}
-              label={
-                <Badge badgeContent={periodicCount} color="primary">
-                  Periodic
-                </Badge>
-              }
-            />
+            <Tab icon={<RepeatIcon />} label={'Periodic'} />
           </Tabs>
 
           <SwipeableViews index={tabIndex} onChangeIndex={setTabIndex}>
