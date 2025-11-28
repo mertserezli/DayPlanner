@@ -36,19 +36,21 @@ export default function HeaderBar({ showSignOut = false }) {
         </Link>
         <Stack direction="row" spacing={1}>
           <ThemeToggle />
-          <Tooltip title="Profile">
-            <IconButton
-              component={NavLink}
-              to="/profile"
-              color="primary"
-              aria-label="profile"
-              style={({ isActive }) => ({
-                color: isActive ? '#1976d2' : 'inherit',
-              })}
-            >
-              <AccountCircleIcon />
-            </IconButton>
-          </Tooltip>
+          {showSignOut && (
+            <Tooltip title="Profile">
+              <IconButton
+                component={NavLink}
+                to="/profile"
+                color="primary"
+                aria-label="profile"
+                style={({ isActive }) => ({
+                  color: isActive ? '#1976d2' : 'inherit',
+                })}
+              >
+                <AccountCircleIcon />
+              </IconButton>
+            </Tooltip>
+          )}
           {showSignOut && <SignOut />}
         </Stack>
       </Toolbar>
