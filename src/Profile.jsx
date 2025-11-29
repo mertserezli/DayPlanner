@@ -9,7 +9,6 @@ import {
   linkWithPopup,
 } from 'firebase/auth';
 import { Navigate } from 'react-router-dom';
-import { useUserStore } from './AuthProvider';
 
 import {
   Container,
@@ -24,6 +23,7 @@ import {
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
 import HeaderBar from './HeaderBar';
 import {
@@ -34,7 +34,7 @@ import {
 } from './passwordStrength';
 
 export default function Profile() {
-  const { user, loading } = useUserStore();
+  const [user, loading] = useAuthState(auth);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
 

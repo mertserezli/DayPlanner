@@ -9,7 +9,6 @@ import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useColorScheme } from '@mui/material/styles';
-import { useUserStore } from './AuthProvider';
 import { auth } from './Firebase';
 import LogoutIcon from '@mui/icons-material/Logout';
 
@@ -71,17 +70,11 @@ function ThemeToggle() {
 }
 
 function SignOut() {
-  const user = useUserStore();
-  function handleSignOut() {
-    auth.signOut();
-  }
   return (
-    user && (
-      <Tooltip title="Sign Out" enterDelay={0} leaveDelay={0}>
-        <IconButton color="primary" onClick={handleSignOut} aria-label="sign out">
-          <LogoutIcon />
-        </IconButton>
-      </Tooltip>
-    )
+    <Tooltip title="Sign Out">
+      <IconButton color="primary" onClick={() => auth.signOut()} aria-label="sign out">
+        <LogoutIcon />
+      </IconButton>
+    </Tooltip>
   );
 }

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link as RouterLink, Navigate, useNavigate } from 'react-router-dom';
 import { auth } from './Firebase';
 
-import { useCreateUserWithEmailAndPassword } from 'react-firebase-hooks/auth';
+import { useAuthState, useCreateUserWithEmailAndPassword } from 'react-firebase-hooks/auth';
 
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -19,7 +19,6 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import IconButton from '@mui/material/IconButton';
 
 import HeaderBar from './HeaderBar';
-import { useUserStore } from './AuthProvider';
 import {
   evaluatePasswordStrength,
   getPasswordStrengthProgressValue,
@@ -29,7 +28,7 @@ import {
 
 export default function SignUp() {
   const navigate = useNavigate();
-  const { user: curUser, loading: curUserLoading } = useUserStore();
+  const [curUser, curUserLoading] = useAuthState(auth);
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
   const [isCapsLockOn, setIsCapsLockOn] = useState(false);

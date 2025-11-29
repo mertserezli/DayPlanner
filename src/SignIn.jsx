@@ -18,15 +18,18 @@ import Container from '@mui/material/Container';
 import IconButton from '@mui/material/IconButton';
 
 import { Link as RouterLink, Navigate, useNavigate } from 'react-router-dom';
-import { useSignInWithEmailAndPassword, useSignInWithGoogle } from 'react-firebase-hooks/auth';
+import {
+  useAuthState,
+  useSignInWithEmailAndPassword,
+  useSignInWithGoogle,
+} from 'react-firebase-hooks/auth';
 import { Divider, InputAdornment, Tooltip } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import HeaderBar from './HeaderBar';
-import { useUserStore } from './AuthProvider';
 
 export default function SignIn() {
   const navigate = useNavigate();
-  const { user, loading } = useUserStore();
+  const [user, loading] = useAuthState(auth);
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
   const [isCapsLockOn, setIsCapsLockOn] = useState(false);

@@ -4,8 +4,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import Calendar from './Calendar';
 import PeriodicTodoList from './PeriodicTodoList';
 import TodoList from './TodoList';
-import AuthProvider, { useUserStore } from './AuthProvider';
-import { getTodoListQuery } from './Firebase';
+import { auth, getTodoListQuery } from './Firebase';
 import SignIn from './SignIn';
 import SignUp from './SignUp';
 import ForgotPassword from './ForgotPassword';
@@ -20,6 +19,7 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 
 import { useCollection } from 'react-firebase-hooks/firestore';
+import { useAuthState } from 'react-firebase-hooks/auth';
 import SwipeableViews from 'react-swipeable-views';
 import HeaderBar from './HeaderBar';
 import Profile from './Profile';
@@ -27,21 +27,19 @@ import NotFound from './NotFound';
 
 function App() {
   return (
-    <AuthProvider>
-      <Routes>
-        <Route path={'/'} element={<Application />} />
-        <Route path={'/signin'} element={<SignIn />} />
-        <Route path={'/signup'} element={<SignUp />} />
-        <Route path={'/forgotpassword'} element={<ForgotPassword />} />
-        <Route path={'/profile'} element={<Profile />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </AuthProvider>
+    <Routes>
+      <Route path={'/'} element={<Application />} />
+      <Route path={'/signin'} element={<SignIn />} />
+      <Route path={'/signup'} element={<SignUp />} />
+      <Route path={'/forgotpassword'} element={<ForgotPassword />} />
+      <Route path={'/profile'} element={<Profile />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   );
 }
 
 function Application() {
-  const { user, loading } = useUserStore();
+  const [user, loading] = useAuthState(auth);
   return (
     <div className="App">
       {loading ? <></> : user ? <DayPlanner /> : <Navigate replace to="/signin" />}
