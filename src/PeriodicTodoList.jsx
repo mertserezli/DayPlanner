@@ -131,6 +131,9 @@ function PeriodicItem({ item }) {
           '&:nth-of-type(odd)': {
             backgroundColor: (theme) => theme.palette.action.hover,
           },
+          '&:hover': {
+            backgroundColor: (theme) => theme.palette.action.selected,
+          },
         }}
       >
         <TableCell
@@ -139,7 +142,6 @@ function PeriodicItem({ item }) {
           onClick={() => setDescriptionDialogOpen(true)}
           sx={{
             cursor: 'pointer',
-            '&:hover': { backgroundColor: 'action.hover' },
             maxWidth: 150,
             whiteSpace: 'nowrap',
             overflow: 'hidden',
@@ -148,10 +150,7 @@ function PeriodicItem({ item }) {
         >
           {item.name}
         </TableCell>
-        <TableCell
-          onClick={() => setDescriptionDialogOpen(true)}
-          sx={{ cursor: 'pointer', '&:hover': { backgroundColor: 'action.hover' } }}
-        >
+        <TableCell onClick={() => setDescriptionDialogOpen(true)} sx={{ cursor: 'pointer' }}>
           <Stack direction="row" spacing={1} alignItems="center">
             <PeriodicChip period={item.period} />
           </Stack>

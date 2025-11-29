@@ -179,6 +179,9 @@ function TodoItem({ item }) {
           '&:nth-of-type(odd)': {
             backgroundColor: (theme) => theme.palette.action.hover,
           },
+          '&:hover': {
+            backgroundColor: (theme) => theme.palette.action.selected,
+          },
           '&:hover .action-menu': {
             opacity: 1,
           },
@@ -190,7 +193,6 @@ function TodoItem({ item }) {
           onClick={() => setDescriptionDialogOpen(true)}
           sx={{
             cursor: 'pointer',
-            '&:hover': { backgroundColor: 'action.hover' },
             maxWidth: 200,
             whiteSpace: 'nowrap',
             overflow: 'hidden',
@@ -204,7 +206,7 @@ function TodoItem({ item }) {
         <TableCell
           align="right"
           onClick={() => setDescriptionDialogOpen(true)}
-          sx={{ cursor: 'pointer', '&:hover': { backgroundColor: 'action.hover' } }}
+          sx={{ cursor: 'pointer' }}
         >
           {(item.value / item.time).toFixed(1)}
         </TableCell>
@@ -213,7 +215,6 @@ function TodoItem({ item }) {
           onClick={() => setDescriptionDialogOpen(true)}
           sx={{
             cursor: 'pointer',
-            '&:hover': { backgroundColor: 'action.hover' },
             display: { xs: 'none', sm: 'table-cell' },
           }}
         >
@@ -224,7 +225,6 @@ function TodoItem({ item }) {
           onClick={() => setDescriptionDialogOpen(true)}
           sx={{
             cursor: 'pointer',
-            '&:hover': { backgroundColor: 'action.hover' },
             display: { xs: 'none', sm: 'table-cell' },
           }}
         >

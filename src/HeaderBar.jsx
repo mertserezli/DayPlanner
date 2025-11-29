@@ -63,9 +63,11 @@ function ThemeToggle() {
   if (!mode) return null;
 
   return (
-    <IconButton onClick={() => setMode(mode === 'light' ? 'dark' : 'light')} color="inherit">
-      {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
-    </IconButton>
+    <Tooltip title="Toggle Theme">
+      <IconButton onClick={() => setMode(mode === 'light' ? 'dark' : 'light')} color="inherit">
+        {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+      </IconButton>
+    </Tooltip>
   );
 }
 
