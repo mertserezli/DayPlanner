@@ -23,6 +23,7 @@ import { useCollection } from 'react-firebase-hooks/firestore';
 import SwipeableViews from 'react-swipeable-views';
 import HeaderBar from './HeaderBar';
 import Profile from './Profile';
+import NotFound from './NotFound';
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
         <Route path={'/signup'} element={<SignUp />} />
         <Route path={'/forgotpassword'} element={<ForgotPassword />} />
         <Route path={'/profile'} element={<Profile />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </AuthProvider>
   );

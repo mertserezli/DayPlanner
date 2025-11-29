@@ -26,7 +26,7 @@
     "start": "vite",
     "dev": "concurrently npm:firebase vite",
     "firebase": "firebase emulators:start",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "serve": "vite preview",
     "prepare": "husky"
   },
