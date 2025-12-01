@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 import Calendar from './Calendar';
 import PeriodicTodoList from './PeriodicTodoList';
@@ -17,6 +17,11 @@ import ChecklistIcon from '@mui/icons-material/Checklist';
 import RepeatIcon from '@mui/icons-material/Repeat';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
+import CssBaseline from '@mui/material/CssBaseline';
+import {
+  Experimental_CssVarsProvider as CssVarsProvider,
+  experimental_extendTheme as extendTheme,
+} from '@mui/material/styles';
 
 import { useCollection } from 'react-firebase-hooks/firestore';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -26,15 +31,27 @@ import Profile from './Profile';
 import NotFound from './NotFound';
 
 function App() {
+  const theme = extendTheme({
+    colorSchemes: {
+      light: true,
+      dark: true,
+    },
+  });
+
   return (
-    <Routes>
-      <Route path={'/'} element={<Application />} />
-      <Route path={'/signin'} element={<SignIn />} />
-      <Route path={'/signup'} element={<SignUp />} />
-      <Route path={'/forgotpassword'} element={<ForgotPassword />} />
-      <Route path={'/profile'} element={<Profile />} />
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+    <CssVarsProvider theme={theme}>
+      <CssBaseline />
+      <BrowserRouter>
+        <Routes>
+          <Route path={'/'} element={<Application />} />
+          <Route path={'/signin'} element={<SignIn />} />
+          <Route path={'/signup'} element={<SignUp />} />
+          <Route path={'/forgotpassword'} element={<ForgotPassword />} />
+          <Route path={'/profile'} element={<Profile />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </CssVarsProvider>
   );
 }
 
