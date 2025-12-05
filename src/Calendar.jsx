@@ -20,10 +20,10 @@ import {
 import { onSnapshot } from 'firebase/firestore';
 
 export default function Calendar() {
-  const query = getCalendarItemsQuery();
   const [data, setData] = useState([]);
 
   useEffect(() => {
+    const query = getCalendarItemsQuery();
     const unsubscribe = onSnapshot(
       query,
       (snapshot) => {
@@ -49,7 +49,7 @@ export default function Calendar() {
     );
 
     return () => unsubscribe();
-  }, [query]);
+  }, []);
 
   const commitChanges = useCallback(({ added, changed, deleted }) => {
     if (added) {
