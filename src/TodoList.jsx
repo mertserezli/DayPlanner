@@ -35,6 +35,7 @@ import {
   updateTodoItem,
   updateTodoDescription,
   addTodoItem,
+  addCalendarItem,
 } from './Firebase';
 import EditIcon from '@mui/icons-material/Edit';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -42,6 +43,7 @@ import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck';
+import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 
@@ -265,6 +267,25 @@ function TodoItem({ item }) {
             anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             transformOrigin={{ vertical: 'top', horizontal: 'right' }}
           >
+            <MenuItem
+              onClick={() => {
+                const nextDate = new Date();
+                nextDate.setMinutes(nextDate.getMinutes() + (15 - (nextDate.getMinutes() % 15)));
+                nextDate.setSeconds(1);
+                nextDate.setMilliseconds(0);
+                addCalendarItem({
+                  allDay: false,
+                  endDate: nextDate,
+                  startDate: nextDate,
+                  title: item.name,
+                });
+              }}
+            >
+              <ListItemIcon>
+                <EventAvailableIcon fontSize="small" />
+              </ListItemIcon>
+              Add to calendar
+            </MenuItem>
             <MenuItem
               onClick={() => {
                 setEditDialogOpen(true);
