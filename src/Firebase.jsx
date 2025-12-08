@@ -12,14 +12,14 @@ import {
 } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyAR3BhiHFJEAgb-DjNF4UJqKyK3tg-TndI',
-  authDomain: 'dayplanner-f78c2.firebaseapp.com',
-  databaseURL: 'https://dayplanner-f78c2.firebaseio.com',
-  projectId: 'dayplanner-f78c2',
-  storageBucket: 'dayplanner-f78c2.appspot.com',
-  messagingSenderId: '626321664189',
-  appId: '1:626321664189:web:aed04b2f38bc2c7100efd4',
-  measurementId: 'G-DF7GXSKEK8',
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
 export const firebase = initializeApp(firebaseConfig);
