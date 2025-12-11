@@ -279,6 +279,7 @@ function TodoItem({ item }) {
                   startDate: nextDate,
                   title: item.name,
                 });
+                handleMenuClose();
               }}
             >
               <ListItemIcon>

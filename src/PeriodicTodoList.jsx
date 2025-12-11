@@ -4,6 +4,7 @@ import {
   updatePeriodicTodoItem,
   updatePeriodicTodoDescriptionItem,
   addPeriodicTodoItem,
+  addCalendarItem,
 } from './Firebase';
 
 import DescriptionDialog from './DescriptionDialog';
@@ -49,6 +50,7 @@ import {
 import Typography from '@mui/material/Typography';
 import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 
 function PeriodicTodoList() {
   const [TodoItems] = useCollection(getPeriodicTodoListQuery());
@@ -192,12 +194,32 @@ function PeriodicItem({ item }) {
           >
             <MenuItem
               onClick={() => {
-                setEditDialogOpen(true);
+                const nextDate = new Date();
+                nextDate.setMinutes(nextDate.getMinutes() + (15 - (nextDate.getMinutes() % 15)));
+                nextDate.setSeconds(1);
+                nextDate.setMilliseconds(0);
+                addCalendarItem({
+                  allDay: false,
+                  endDate: nextDate,
+                  startDate: nextDate,
+                  title: item.name,
+                });
                 handleMenuClose();
               }}
             >
               <ListItemIcon>
                 <EditIcon fontSize="small" />
+              </ListItemIcon>
+              Add to calendar
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                setEditDialogOpen(true);
+                handleMenuClose();
+              }}
+            >
+              <ListItemIcon>
+                <EventAvailableIcon fontSize="small" />
               </ListItemIcon>
               Edit
             </MenuItem>
