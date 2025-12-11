@@ -49,8 +49,8 @@ export default function Calendar() {
   }, []);
 
   return (
-    <Paper>
-      <Scheduler data={items} height={800}>
+    <Paper style={{ height: '80vh', overflow: 'auto' }}>
+      <Scheduler data={items} height={'100%'}>
         <EditingState onCommitChanges={commitChanges} />
         <EditRecurrenceMenu />
         <DayView startDayHour={6} endDayHour={24} />
