@@ -42,7 +42,7 @@ export default function SignUp() {
     return <Typography>Loading...</Typography>;
   }
   if (curUser) {
-    return <Navigate replace to="/" />;
+    return <Navigate replace to="/app" />;
   }
 
   const handleEmailChange = (event) => {
@@ -67,7 +67,7 @@ export default function SignUp() {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     createUserWithEmailAndPassword(String(data.get('email')), String(data.get('password'))).then(
-      () => navigate('/')
+      () => navigate('/app')
     );
   }
 

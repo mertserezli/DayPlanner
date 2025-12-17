@@ -29,6 +29,7 @@ import SwipeableViews from 'react-swipeable-views';
 import HeaderBar from './HeaderBar';
 import Profile from './Profile';
 import NotFound from './NotFound';
+import LandingPage from './LandingPage';
 
 function App() {
   const theme = extendTheme({
@@ -43,7 +44,8 @@ function App() {
       <CssBaseline />
       <BrowserRouter>
         <Routes>
-          <Route path={'/'} element={<Application />} />
+          <Route path={'/'} element={<LandingPage />} />
+          <Route path={'/app'} element={<Application />} />
           <Route path={'/signin'} element={<SignIn />} />
           <Route path={'/signup'} element={<SignUp />} />
           <Route path={'/forgotpassword'} element={<ForgotPassword />} />

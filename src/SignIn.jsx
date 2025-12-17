@@ -41,7 +41,7 @@ export default function SignIn() {
     return <Typography>Loading...</Typography>;
   }
   if (user) {
-    return <Navigate replace to="/" />;
+    return <Navigate replace to="/app" />;
   }
 
   const handleEmailChange = (event) => {
@@ -64,14 +64,14 @@ export default function SignIn() {
 
   const signInWithGoogleHandler = () => {
     signInWithGoogle().then((result) => {
-      if (result.user) navigate('/');
+      if (result.user) navigate('/app');
     });
   };
 
   const signInAnonymouslyHandler = () => {
     signInAnonymously(auth)
       .then((result) => {
-        if (result.user) navigate('/');
+        if (result.user) navigate('/app');
       })
       .catch((err) => {
         console.error('Anonymous sign-in error:', err);
@@ -83,7 +83,7 @@ export default function SignIn() {
     const data = new FormData(event.currentTarget);
     signInWithEmailAndPassword(String(data.get('email')), String(data.get('password'))).then(
       (result) => {
-        if (result.user) navigate('/');
+        if (result.user) navigate('/app');
       }
     );
   };
