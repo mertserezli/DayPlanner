@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 import {
   Box,
@@ -163,7 +164,11 @@ export default function LandingPage() {
   );
 }
 
-// eslint-disable-next-line react/prop-types
+Feature.propTypes = {
+  icon: PropTypes.node.isRequired,
+  title: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
+};
 function Feature({ icon, title, description }) {
   return (
     <Grid item xs={12} sm={6} md={3}>
@@ -188,14 +193,34 @@ function Feature({ icon, title, description }) {
   );
 }
 
-const mockTasks = [
+const INITIAL_TASKS = [
   { title: 'Write project proposal', score: 0.27 },
   { title: 'Prepare meeting agenda', score: 0.21 },
   { title: 'Review notes', score: 0.18 },
 ];
 
+const ROW_HEIGHT = 56;
+
 export function FlowModeMock() {
   const theme = useTheme();
+  const [tasks, setTasks] = useState(INITIAL_TASKS);
+  const [leaving, setLeaving] = useState(false);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setLeaving(true);
+
+      setTimeout(() => {
+        setTasks((prev) => {
+          const [first, ...rest] = prev;
+          return [...rest, first];
+        });
+        setLeaving(false);
+      }, 350);
+    }, 2500);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <Paper
@@ -217,36 +242,48 @@ export function FlowModeMock() {
       </Typography>
 
       <Stack spacing={2}>
-        {mockTasks.map((task, index) => {
+        {tasks.map((task, index) => {
           const active = index === 0;
+          const isLeaving = active && leaving;
 
           return (
-            <Box key={task.title}>
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1.5,
-                  opacity: active ? 1 : 0.5,
-                }}
-              >
-                <Chip
-                  size="small"
-                  icon={active ? <PlayArrowIcon /> : null}
-                  label={active ? 'Now' : 'Next'}
-                  color={active ? 'primary' : 'default'}
-                  variant={active ? 'filled' : 'outlined'}
-                />
+            <Box
+              key={task.title}
+              sx={{
+                height: ROW_HEIGHT,
+                display: 'flex',
+                alignItems: 'center',
+                transition: 'opacity 300ms ease, transform 300ms ease',
+                opacity: isLeaving ? 0 : active ? 1 : 0.5,
+                transform: isLeaving ? 'translateY(-12px)' : 'translateY(0)',
+              }}
+            >
+              <Box sx={{ width: '100%' }}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1.5,
+                  }}
+                >
+                  <Chip
+                    size="small"
+                    icon={active ? <PlayArrowIcon /> : null}
+                    label={active ? 'Now' : 'Next'}
+                    color={active ? 'primary' : 'default'}
+                    variant={active ? 'filled' : 'outlined'}
+                  />
 
-                <Box flexGrow={1}>
-                  <Typography fontWeight={active ? 600 : 400}>{task.title}</Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    Score: {task.score}
-                  </Typography>
+                  <Box flexGrow={1}>
+                    <Typography fontWeight={active ? 600 : 400}>{task.title}</Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      Score: {task.score}
+                    </Typography>
+                  </Box>
                 </Box>
-              </Box>
 
-              {index < mockTasks.length - 1 && <Divider sx={{ my: 1.5, ml: 6 }} />}
+                {index < tasks.length - 1 && <Divider sx={{ mt: 1.25, ml: 6 }} />}
+              </Box>
             </Box>
           );
         })}
