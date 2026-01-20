@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link as RouterLink, Navigate, useNavigate } from 'react-router-dom';
-import { auth } from './Firebase';
+import { useTranslation } from 'react-i18next';
 
+import { auth } from './Firebase';
 import { useAuthState, useCreateUserWithEmailAndPassword } from 'react-firebase-hooks/auth';
 
 import Avatar from '@mui/material/Avatar';
@@ -13,37 +14,25 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { InputAdornment, LinearProgress, Tooltip } from '@mui/material';
+import { InputAdornment, Tooltip } from '@mui/material';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import IconButton from '@mui/material/IconButton';
 
 import HeaderBar from './HeaderBar';
-import {
-  evaluatePasswordStrength,
-  getPasswordStrengthProgressValue,
-  passwordStrengthColorMap,
-  passwordStrengthHintMap,
-} from './passwordStrength';
+import PasswordStrength from './PasswordStrength.jsx';
 
 export default function SignUp() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [curUser, curUserLoading] = useAuthState(auth);
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
   const [isCapsLockOn, setIsCapsLockOn] = useState(false);
   const [password, setPassword] = useState('');
-  const [passwordStrength, setPasswordStrength] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [createUserWithEmailAndPassword, createdUser, creating, createError] =
     useCreateUserWithEmailAndPassword(auth);
-
-  if (curUserLoading) {
-    return <Typography>Loading...</Typography>;
-  }
-  if (curUser) {
-    return <Navigate replace to="/app" />;
-  }
 
   const handleEmailChange = (event) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -71,6 +60,13 @@ export default function SignUp() {
     );
   }
 
+  if (curUserLoading) {
+    return <Typography>{t('loading')}</Typography>;
+  }
+  if (curUser) {
+    return <Navigate replace to="/app" />;
+  }
+
   return (
     <>
       <HeaderBar showSignOut={false} />
@@ -88,11 +84,12 @@ export default function SignUp() {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Sign up
+            {t('signUp')}
           </Typography>
+
           {createdUser && (
             <>
-              <span>{'You are already logged in'}</span>
+              <span>{t('alreadyLoggedIn')}</span>
               <br />
             </>
           )}
@@ -104,17 +101,18 @@ export default function SignUp() {
           )}
           {creating && (
             <>
-              <span>{'loading'}</span>
+              <span>{t('loading')}</span>
               <br />
             </>
           )}
+
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
             <TextField
               margin="normal"
               required
               fullWidth
               id="email"
-              label="Email Address"
+              label={t('emailAddress')}
               name="email"
               autoComplete="email"
               autoFocus
@@ -128,27 +126,23 @@ export default function SignUp() {
               required
               fullWidth
               name="password"
-              label="Password"
+              label={t('password')}
               type={showPassword ? 'text' : 'password'}
               id="password"
               autoComplete="current-password"
               value={password}
               onChange={(e) => {
-                const pwd = e.target.value;
-                setPassword(pwd);
-                setPasswordStrength(evaluatePasswordStrength(pwd));
+                setPassword(e.target.value);
               }}
               onKeyDown={(e) => {
                 setIsCapsLockOn(e.getModifierState && e.getModifierState('CapsLock'));
               }}
-              onBlur={() => {
-                setIsCapsLockOn(false);
-              }}
+              onBlur={() => setIsCapsLockOn(false)}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
                     {isCapsLockOn && (
-                      <Tooltip title="Caps Lock is ON">
+                      <Tooltip title={t('capsLockOn')}>
                         <WarningAmberIcon color="warning" />
                       </Tooltip>
                     )}
@@ -163,24 +157,7 @@ export default function SignUp() {
                 ),
               }}
             />
-            <Typography variant="body2" sx={{ mt: 1 }}>
-              Password Strength: {passwordStrength}
-            </Typography>
-            <Tooltip title={passwordStrengthHintMap[passwordStrength] || ''}>
-              <LinearProgress
-                variant="determinate"
-                value={getPasswordStrengthProgressValue(passwordStrength)}
-                sx={{
-                  mt: 1,
-                  height: 8,
-                  borderRadius: 5,
-                  backgroundColor: '#e0e0e0',
-                  '& .MuiLinearProgress-bar': {
-                    backgroundColor: passwordStrengthColorMap[passwordStrength] || '#90caf9',
-                  },
-                }}
-              />
-            </Tooltip>
+            <PasswordStrength password={password} />
             <Button
               type="submit"
               fullWidth
@@ -188,10 +165,10 @@ export default function SignUp() {
               sx={{ mt: 3, mb: 2 }}
               disabled={!!emailError || email.trim() === ''}
             >
-              Sign Up
+              {t('signUpButton')}
             </Button>
             <Link component={RouterLink} to={'/signin'} variant="body2">
-              Already have an account? Sign In
+              {t('alreadyHaveAccount')}
             </Link>
           </Box>
         </Box>

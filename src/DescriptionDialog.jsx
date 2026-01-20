@@ -1,17 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
+
 import { Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
 import Button from '@mui/material/Button';
 
-DescriptionDialog.propTypes = {
-  saveDescription: PropTypes.func.isRequired,
-  item: PropTypes.shape({
-    description: PropTypes.string.isRequired,
-  }).isRequired,
-  open: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
-};
 function DescriptionDialog({ saveDescription, item, open, onClose }) {
+  const { t } = useTranslation();
   const [description, setDescription] = useState(item.description);
 
   useEffect(() => {
@@ -27,7 +21,7 @@ function DescriptionDialog({ saveDescription, item, open, onClose }) {
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>Edit Description</DialogTitle>
+      <DialogTitle>{t('descriptionDialog.title')}</DialogTitle>
       <DialogContent>
         <TextField
           multiline
@@ -36,13 +30,13 @@ function DescriptionDialog({ saveDescription, item, open, onClose }) {
           autoFocus
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="Write details about this to-do..."
+          placeholder={t('descriptionDialog.placeholder')}
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={onClose}>{t('common.cancel')}</Button>
         <Button type="submit" onClick={handleSaveDescription} variant="contained">
-          Save
+          {t('common.save')}
         </Button>
       </DialogActions>
     </Dialog>

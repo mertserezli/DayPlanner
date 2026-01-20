@@ -1,7 +1,6 @@
-import { useCollection } from 'react-firebase-hooks/firestore';
-
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
+import { useCollection } from 'react-firebase-hooks/firestore';
+import { useTranslation } from 'react-i18next';
 
 import {
   Table,
@@ -49,6 +48,7 @@ import Typography from '@mui/material/Typography';
 
 function TodoList() {
   const [TodoItems] = useCollection(getTodoListQuery());
+  const { t } = useTranslation();
 
   const { items, requestSort, sortConfig } = useSortableData(
     TodoItems
@@ -72,13 +72,7 @@ function TodoList() {
       <AddTodo />
       <TableContainer
         component={Paper}
-        sx={{
-          marginTop: 2,
-          overflowX: 'auto',
-          '@media (max-width: 600px)': {
-            maxWidth: '100vw',
-          },
-        }}
+        sx={{ marginTop: 2, overflowX: 'auto', '@media (max-width: 600px)': { maxWidth: '100vw' } }}
       >
         <Table aria-label="todo list table">
           <TableHead>
@@ -89,7 +83,7 @@ function TodoList() {
                   direction={sortConfig?.key === 'name' ? sortConfig.direction : 'asc'}
                   onClick={createSortHandler('name')}
                 >
-                  To Do
+                  {t('todoList.columns.name')}
                 </TableSortLabel>
               </TableCell>
               <TableCell align="right">
@@ -98,7 +92,7 @@ function TodoList() {
                   direction={sortConfig?.key === 'score' ? sortConfig.direction : 'asc'}
                   onClick={createSortHandler('score')}
                 >
-                  Score
+                  {t('todoList.columns.score')}
                 </TableSortLabel>
               </TableCell>
               <TableCell align="right" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
@@ -107,7 +101,7 @@ function TodoList() {
                   direction={sortConfig?.key === 'value' ? sortConfig.direction : 'asc'}
                   onClick={createSortHandler('value')}
                 >
-                  Value
+                  {t('todoList.columns.value')}
                 </TableSortLabel>
               </TableCell>
               <TableCell align="right" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
@@ -116,7 +110,7 @@ function TodoList() {
                   direction={sortConfig?.key === 'time' ? sortConfig.direction : 'asc'}
                   onClick={createSortHandler('time')}
                 >
-                  Time
+                  {t('todoList.columns.time')}
                 </TableSortLabel>
               </TableCell>
             </TableRow>
@@ -130,10 +124,10 @@ function TodoList() {
                   <TableCell colSpan={5} align="center" sx={{ py: 6 }}>
                     <PlaylistAddCheckIcon color="disabled" sx={{ fontSize: 48, mb: 1 }} />
                     <Typography variant="subtitle1" color="text.secondary">
-                      No to-do items yet
+                      {t('todoList.empty.title')}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                      Click <strong>&#34;Add To-Do&#34;</strong> to create your first task.
+                      {t('todoList.empty.subtitle')}
                     </Typography>
                   </TableCell>
                 </TableRow>
@@ -146,15 +140,8 @@ function TodoList() {
   );
 }
 
-TodoItem.propTypes = {
-  item: PropTypes.shape({
-    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-    name: PropTypes.string.isRequired,
-    value: PropTypes.number.isRequired,
-    time: PropTypes.number.isRequired,
-  }).isRequired,
-};
 function TodoItem({ item }) {
+  const { t } = useTranslation();
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('sm'));
 
@@ -252,7 +239,7 @@ function TodoItem({ item }) {
             }}
           >
             {isDesktop ? (
-              <Tooltip title="Actions">
+              <Tooltip title={t('actions')}>
                 <MoreVertIcon />
               </Tooltip>
             ) : (
@@ -285,7 +272,7 @@ function TodoItem({ item }) {
               <ListItemIcon>
                 <EventAvailableIcon fontSize="small" />
               </ListItemIcon>
-              Add to calendar
+              {t('addToCalendar')}
             </MenuItem>
             <MenuItem
               onClick={() => {
@@ -296,7 +283,7 @@ function TodoItem({ item }) {
               <ListItemIcon>
                 <EditIcon fontSize="small" />
               </ListItemIcon>
-              Edit
+              {t('common.edit')}
             </MenuItem>
             <MenuItem
               onClick={() => {
@@ -307,7 +294,7 @@ function TodoItem({ item }) {
               <ListItemIcon>
                 <DeleteIcon fontSize="small" />
               </ListItemIcon>
-              Delete
+              {t('common.delete')}
             </MenuItem>
           </Menu>
         </TableCell>
@@ -335,20 +322,8 @@ function TodoItem({ item }) {
   );
 }
 
-TodoDialog.propTypes = {
-  open: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
-  onSubmit: PropTypes.func.isRequired,
-  initialData: PropTypes.shape({
-    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    name: PropTypes.string,
-    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    time: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    description: PropTypes.string,
-  }),
-  mode: PropTypes.oneOf(['add', 'edit']),
-};
 function TodoDialog({ open, onClose, onSubmit, initialData = {}, mode = 'add' }) {
+  const { t } = useTranslation();
   const [title, setTitle] = useState(initialData.name || '');
   const [value, setValue] = useState(initialData.value || '');
   const [time, setTime] = useState(initialData.time || '');
@@ -378,11 +353,13 @@ function TodoDialog({ open, onClose, onSubmit, initialData = {}, mode = 'add' })
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <form onSubmit={handleSubmit}>
-        <DialogTitle>{mode === 'add' ? 'Add a new To-Do' : 'Edit To-Do'}</DialogTitle>
+        <DialogTitle>
+          {mode === 'add' ? t('todoDialog.addTitle') : t('todoDialog.editTitle')}
+        </DialogTitle>
         <DialogContent dividers sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 2 }}>
           <TextField
             required
-            label="Title"
+            label={t('todoDialog.fields.title')}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             fullWidth
@@ -390,7 +367,7 @@ function TodoDialog({ open, onClose, onSubmit, initialData = {}, mode = 'add' })
           <TextField
             required
             name="Value"
-            label="Value"
+            label={t('todoDialog.fields.value')}
             type="text"
             inputMode="numeric"
             value={value}
@@ -400,7 +377,7 @@ function TodoDialog({ open, onClose, onSubmit, initialData = {}, mode = 'add' })
           <TextField
             required
             name="Time"
-            label="Time (minutes)"
+            label={t('todoDialog.fields.time')}
             type="text"
             inputMode="numeric"
             value={time}
@@ -408,7 +385,7 @@ function TodoDialog({ open, onClose, onSubmit, initialData = {}, mode = 'add' })
             fullWidth
           />
           <TextField
-            label="Description"
+            label={t('description')}
             multiline
             minRows={3}
             value={description}
@@ -417,9 +394,9 @@ function TodoDialog({ open, onClose, onSubmit, initialData = {}, mode = 'add' })
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose}>Cancel</Button>
+          <Button onClick={onClose}>{t('common.cancel')}</Button>
           <Button type="submit" variant="contained">
-            {mode === 'add' ? 'Add' : 'Save'}
+            {mode === 'add' ? t('common.add') : t('common.save')}
           </Button>
         </DialogActions>
       </form>
@@ -428,6 +405,7 @@ function TodoDialog({ open, onClose, onSubmit, initialData = {}, mode = 'add' })
 }
 
 function AddTodo() {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
 
   return (
@@ -439,7 +417,7 @@ function AddTodo() {
         onClick={() => setOpen(true)}
         sx={{ mb: 2 }}
       >
-        Add To-Do
+        {t('addTodo')}
       </Button>
 
       <TodoDialog
@@ -454,17 +432,6 @@ function AddTodo() {
   );
 }
 
-EditTodoDialog.propTypes = {
-  open: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
-  initialData: PropTypes.shape({
-    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    name: PropTypes.string,
-    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    time: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    description: PropTypes.string,
-  }),
-};
 function EditTodoDialog({ open, onClose, initialData }) {
   const handleEdit = (updatedItem) => {
     updateTodoItem(
@@ -487,12 +454,9 @@ function EditTodoDialog({ open, onClose, initialData }) {
   );
 }
 
-ConfirmDeleteDialog.propTypes = {
-  open: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
-  onConfirm: PropTypes.func.isRequired,
-};
 function ConfirmDeleteDialog({ open, onClose, onConfirm }) {
+  const { t } = useTranslation();
+
   function handleRemove() {
     onClose();
     onConfirm();
@@ -500,14 +464,14 @@ function ConfirmDeleteDialog({ open, onClose, onConfirm }) {
 
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Confirm Deletion</DialogTitle>
+      <DialogTitle>{t('confirmDelete.title')}</DialogTitle>
       <DialogContent>
-        <Typography>Are you sure you want to delete this to-do item?</Typography>
+        <Typography>{t('confirmDelete.message')}</Typography>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={onClose}>{t('common.cancel')}</Button>
         <Button onClick={handleRemove} color="error" variant="contained">
-          Delete
+          {t('common.delete')}
         </Button>
       </DialogActions>
     </Dialog>

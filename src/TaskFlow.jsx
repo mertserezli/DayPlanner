@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+
 import { updateTodoDescription, getTodoListQuery } from './Firebase';
 import { getDocs } from 'firebase/firestore';
-import PropTypes from 'prop-types';
-
 import { Paper, Typography, TextField, Button, Box, Stack, Divider } from '@mui/material';
 
 let timeout;
 
 export default function TaskFlow() {
+  const { t } = useTranslation();
   const [tasks, setTasks] = useState([]);
   const [curTask, setCurTask] = useState(null);
-
   const [nextTaskTime, setNextTaskTime] = useState(null);
   const [countdown, setCountdown] = useState('');
 
@@ -33,14 +33,12 @@ export default function TaskFlow() {
 
   useEffect(() => {
     if (!nextTaskTime) return;
-
     const interval = setInterval(() => {
       const diff = Math.max(0, nextTaskTime - Date.now());
       const minutes = Math.floor(diff / 60000);
       const seconds = Math.floor((diff % 60000) / 1000);
       setCountdown(`${minutes}m ${seconds}s`);
     }, 1000);
-
     return () => clearInterval(interval);
   }, [nextTaskTime]);
 
@@ -80,11 +78,11 @@ export default function TaskFlow() {
       ) : (
         <Paper elevation={3} sx={{ p: 3, textAlign: 'center' }}>
           <Typography variant="h6" color="text.secondary">
-            No tasks in flow
+            {t('taskFlow.noTasks')}
           </Typography>
           {countdown && 0 < tasks.length && (
             <Typography variant="body2" color="text.secondary">
-              Next task in: <strong>{countdown}</strong>
+              {t('taskFlow.nextTaskIn')} <strong>{countdown}</strong>
             </Typography>
           )}
         </Paper>
@@ -93,18 +91,8 @@ export default function TaskFlow() {
   );
 }
 
-CurrentTask.propTypes = {
-  task: PropTypes.shape({
-    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-    name: PropTypes.string.isRequired,
-    description: PropTypes.string.isRequired,
-    score: PropTypes.number.isRequired,
-    date: PropTypes.instanceOf(Date),
-  }).isRequired,
-  editTask: PropTypes.func.isRequired,
-  removeTask: PropTypes.func.isRequired,
-};
 function CurrentTask({ task, editTask, removeTask }) {
+  const { t } = useTranslation();
   const [description, setDescription] = useState(task.description);
   const [scheduledMinLater, setScheduledMinLater] = useState(30);
 
@@ -130,19 +118,17 @@ function CurrentTask({ task, editTask, removeTask }) {
   return (
     <Paper elevation={3} sx={{ p: 3 }}>
       <Typography variant="h6" gutterBottom>
-        Current Task
+        {t('currentTask.title')}
       </Typography>
 
       <Stack spacing={2}>
-        <Typography variant="subtitle1">
-          <strong>Title:</strong> {task.name}
-        </Typography>
+        <Typography variant="subtitle1">{task.name}</Typography>
         <Typography variant="body2" color="text.secondary">
-          <strong>Score:</strong> {task.score.toFixed(2)}
+          <strong>{t('currentTask.fields.score')}:</strong> {task.score.toFixed(2)}
         </Typography>
 
         <TextField
-          label="Description"
+          label={t('description')}
           multiline
           rows={4}
           fullWidth
@@ -151,7 +137,7 @@ function CurrentTask({ task, editTask, removeTask }) {
         />
 
         <TextField
-          label="Schedule later (minutes)"
+          label={t('currentTask.fields.scheduleLater')}
           type="number"
           fullWidth
           value={scheduledMinLater}
@@ -162,10 +148,10 @@ function CurrentTask({ task, editTask, removeTask }) {
 
         <Stack direction="row" spacing={2}>
           <Button variant="contained" color="primary" onClick={handleEdit}>
-            Queue
+            {t('currentTask.actions.queue')}
           </Button>
           <Button variant="outlined" color="error" onClick={handleRemove}>
-            Remove
+            {t('currentTask.actions.remove')}
           </Button>
         </Stack>
       </Stack>

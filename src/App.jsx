@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import Calendar from './Calendar';
 import PeriodicTodoList from './PeriodicTodoList';
@@ -18,10 +19,6 @@ import RepeatIcon from '@mui/icons-material/Repeat';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
-import {
-  Experimental_CssVarsProvider as CssVarsProvider,
-  experimental_extendTheme as extendTheme,
-} from '@mui/material/styles';
 
 import { useCollection } from 'react-firebase-hooks/firestore';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -30,17 +27,11 @@ import HeaderBar from './HeaderBar';
 import Profile from './Profile';
 import NotFound from './NotFound';
 import LandingPage from './LandingPage';
+import { MUIWrapper } from './MUIWrapper';
 
 function App() {
-  const theme = extendTheme({
-    colorSchemes: {
-      light: true,
-      dark: true,
-    },
-  });
-
   return (
-    <CssVarsProvider theme={theme}>
+    <MUIWrapper>
       <CssBaseline />
       <BrowserRouter>
         <Routes>
@@ -53,7 +44,7 @@ function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
-    </CssVarsProvider>
+    </MUIWrapper>
   );
 }
 
@@ -67,6 +58,7 @@ function Application() {
 }
 
 function DayPlanner() {
+  const { t } = useTranslation();
   const [isFlow, setIsFlow] = useState(false);
   const [tabIndex, setTabIndex] = useState(1);
   const [todoItems] = useCollection(getTodoListQuery());
@@ -89,7 +81,7 @@ function DayPlanner() {
         onClick={() => setIsFlow(!isFlow)}
         sx={{ mb: 2 }}
       >
-        {isFlow ? 'Stop Flow' : 'Start Flow'}
+        {isFlow ? t('dayPlanner.stopFlow') : t('dayPlanner.startFlow')}
       </Button>
       {!isFlow ? <TodoList /> : <TaskFlow />}
     </>
@@ -107,16 +99,16 @@ function DayPlanner() {
             textColor="primary"
             indicatorColor="primary"
           >
-            <Tab icon={<EventIcon />} label="Calendar" />
+            <Tab icon={<EventIcon />} label={t('dayPlanner.tabs.calendar')} />
             <Tab
               icon={<ChecklistIcon />}
               label={
                 <Badge badgeContent={todoCount} color="primary">
-                  To-Do
+                  {t('dayPlanner.tabs.todo')}
                 </Badge>
               }
             />
-            <Tab icon={<RepeatIcon />} label={'Periodic'} />
+            <Tab icon={<RepeatIcon />} label={t('dayPlanner.tabs.periodic')} />
           </Tabs>
 
           <SwipeableViews index={tabIndex} onChangeIndex={setTabIndex}>

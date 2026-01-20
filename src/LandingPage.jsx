@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 
 import {
   Box,
@@ -25,6 +25,8 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import HeaderBar from './HeaderBar';
 
 export default function LandingPage() {
+  const { t } = useTranslation();
+
   return (
     <Box>
       {/* Navbar */}
@@ -63,13 +65,10 @@ export default function LandingPage() {
           <Grid container spacing={6} alignItems="center">
             <Grid item xs={12} md={6}>
               <Typography variant="h3" fontWeight={800} gutterBottom>
-                Plan Your Day.
-                <br />
-                Maximize Your Impact.
+                {t('hero.title')}
               </Typography>
               <Typography variant="h6" sx={{ opacity: 0.9 }} paragraph>
-                A smart day planner that prioritizes tasks by value and time — so you always know
-                what to do next.
+                {t('hero.subtitle')}
               </Typography>
               <Stack direction="row" spacing={2} mt={3}>
                 <Button
@@ -79,7 +78,7 @@ export default function LandingPage() {
                   size="large"
                   color="secondary"
                 >
-                  Get Started
+                  {t('hero.getStarted')}
                 </Button>
                 <Button
                   variant="outlined"
@@ -101,28 +100,28 @@ export default function LandingPage() {
       {/* Features */}
       <Container sx={{ py: 10 }}>
         <Typography variant="h4" fontWeight={700} textAlign="center" mb={6}>
-          Why Day Planner?
+          {t('features.title')}
         </Typography>
         <Grid container spacing={4}>
           <Feature
             icon={<BoltIcon fontSize="large" color="primary" />}
-            title="Value-Based Prioritization"
-            description="Automatically focus on tasks with the highest impact per unit of time."
+            title={t('features.valueBased.title')}
+            description={t('features.valueBased.description')}
           />
           <Feature
             icon={<ViewDayIcon fontSize="large" color="primary" />}
-            title="Flow Mode"
-            description="Work distraction-free by tackling one high-impact task at a time."
+            title={t('features.flowMode.title')}
+            description={t('features.flowMode.description')}
           />
           <Feature
             icon={<RepeatIcon fontSize="large" color="primary" />}
-            title="Recurring Tasks"
-            description="Build habits with daily, weekly, or custom periodic tasks."
+            title={t('features.recurring.title')}
+            description={t('features.recurring.description')}
           />
           <Feature
             icon={<EventIcon fontSize="large" color="primary" />}
-            title="Calendar View"
-            description="Drag, drop, and schedule tasks visually across your day."
+            title={t('features.calendar.title')}
+            description={t('features.calendar.description')}
           />
         </Grid>
       </Container>
@@ -131,13 +130,13 @@ export default function LandingPage() {
       <Box sx={{ py: 10, bgcolor: 'background.paper' }}>
         <Container sx={{ textAlign: 'center' }}>
           <Typography variant="h4" fontWeight={700} gutterBottom>
-            Take Control of Your Day
+            {t('cta.title')}
           </Typography>
           <Typography color="text.secondary" mb={4}>
-            Stop guessing what to do next. Let value and time guide your focus.
+            {t('cta.subtitle')}
           </Typography>
           <Button component={RouterLink} to="/app" variant="contained" size="large">
-            Start Planning
+            {t('cta.startPlanning')}
           </Button>
         </Container>
       </Box>
@@ -151,7 +150,9 @@ export default function LandingPage() {
             flexWrap: 'wrap',
           }}
         >
-          <Typography color="text.secondary">© {new Date().getFullYear()} Day Planner</Typography>
+          <Typography color="text.secondary">
+            © {new Date().getFullYear()} {t('footer.brand')}
+          </Typography>
           <Stack direction="row" spacing={2}>
             <Button href="https://github.com/mertserezli/DayPlanner">GitHub</Button>
             <Button component={RouterLink} to="/app">
@@ -164,11 +165,6 @@ export default function LandingPage() {
   );
 }
 
-Feature.propTypes = {
-  icon: PropTypes.node.isRequired,
-  title: PropTypes.string.isRequired,
-  description: PropTypes.string.isRequired,
-};
 function Feature({ icon, title, description }) {
   return (
     <Grid item xs={12} sm={6} md={3}>
@@ -194,14 +190,15 @@ function Feature({ icon, title, description }) {
 }
 
 const INITIAL_TASKS = [
-  { title: 'Write project proposal', score: 0.27 },
-  { title: 'Prepare meeting agenda', score: 0.21 },
-  { title: 'Review notes', score: 0.18 },
+  { titleKey: 'flowMode.tasks.proposal', score: 27 },
+  { titleKey: 'flowMode.tasks.agenda', score: 21 },
+  { titleKey: 'flowMode.tasks.notes', score: 18 },
 ];
 
 const ROW_HEIGHT = 56;
 
 export function FlowModeMock() {
+  const { t } = useTranslation();
   const theme = useTheme();
   const [tasks, setTasks] = useState(INITIAL_TASKS);
   const [leaving, setLeaving] = useState(false);
@@ -234,11 +231,11 @@ export function FlowModeMock() {
       }}
     >
       <Typography fontWeight={700} gutterBottom>
-        Flow Mode
+        {t('flowMode.title')}
       </Typography>
 
       <Typography variant="body2" color="text.secondary" mb={2}>
-        Highest value / time task, one at a time
+        {t('flowMode.subtitle')}
       </Typography>
 
       <Stack spacing={2}>
@@ -248,7 +245,7 @@ export function FlowModeMock() {
 
           return (
             <Box
-              key={task.title}
+              key={task.titleKey}
               sx={{
                 height: ROW_HEIGHT,
                 display: 'flex',
@@ -269,15 +266,15 @@ export function FlowModeMock() {
                   <Chip
                     size="small"
                     icon={active ? <PlayArrowIcon /> : null}
-                    label={active ? 'Now' : 'Next'}
+                    label={active ? t('flowMode.now') : t('flowMode.next')}
                     color={active ? 'primary' : 'default'}
                     variant={active ? 'filled' : 'outlined'}
                   />
 
                   <Box flexGrow={1}>
-                    <Typography fontWeight={active ? 600 : 400}>{task.title}</Typography>
+                    <Typography fontWeight={active ? 600 : 400}>{t(task.titleKey)}</Typography>
                     <Typography variant="caption" color="text.secondary">
-                      Score: {task.score}
+                      {t('flowMode.score')}: {task.score}
                     </Typography>
                   </Box>
                 </Box>

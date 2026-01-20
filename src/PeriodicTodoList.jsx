@@ -1,3 +1,7 @@
+import { useCollection } from 'react-firebase-hooks/firestore';
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
 import {
   getPeriodicTodoListQuery,
   removePeriodicTodoItem,
@@ -6,18 +10,8 @@ import {
   addPeriodicTodoItem,
   addCalendarItem,
 } from './Firebase';
-
 import DescriptionDialog from './DescriptionDialog';
 
-import { useCollection } from 'react-firebase-hooks/firestore';
-import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-
-import IconButton from '@mui/material/IconButton';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import Button from '@mui/material/Button';
 import {
   Dialog,
   DialogActions,
@@ -46,14 +40,21 @@ import {
   useMediaQuery,
   InputLabel,
   FormHelperText,
+  IconButton,
+  Button,
+  Typography,
 } from '@mui/material';
-import Typography from '@mui/material/Typography';
 import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EventAvailableIcon from '@mui/icons-material/EventAvailable';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 
 function PeriodicTodoList() {
+  const { t } = useTranslation();
   const [TodoItems] = useCollection(getPeriodicTodoListQuery());
+
   const items = TodoItems
     ? TodoItems.docs.map((item) => {
         let id = item.id;
@@ -70,8 +71,8 @@ function PeriodicTodoList() {
         <Table aria-label="periodic todo list table">
           <TableHead>
             <TableRow>
-              <TableCell>To Do</TableCell>
-              <TableCell>Period</TableCell>
+              <TableCell>{t('periodicList.columns.todo')}</TableCell>
+              <TableCell>{t('periodicList.columns.period')}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -83,10 +84,10 @@ function PeriodicTodoList() {
                   <TableCell colSpan={3} align="center" sx={{ py: 6 }}>
                     <PlaylistAddCheckIcon color="disabled" sx={{ fontSize: 48, mb: 1 }} />
                     <Typography variant="subtitle1" color="text.secondary">
-                      No periodic tasks yet
+                      {t('periodicList.empty.title')}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                      Click <strong>&#34;Add Periodic&#34;</strong> to create a recurring to-do.
+                      {t('periodicList.empty.subtitle')}
                     </Typography>
                   </TableCell>
                 </TableRow>
@@ -99,14 +100,8 @@ function PeriodicTodoList() {
   );
 }
 
-PeriodicItem.propTypes = {
-  item: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    period: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]).isRequired,
-  }).isRequired,
-};
 function PeriodicItem({ item }) {
+  const { t } = useTranslation();
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('sm'));
 
@@ -177,7 +172,7 @@ function PeriodicItem({ item }) {
             }}
           >
             {isDesktop ? (
-              <Tooltip title="More actions">
+              <Tooltip title={t('actions')}>
                 <MoreVertIcon />
               </Tooltip>
             ) : (
@@ -210,7 +205,7 @@ function PeriodicItem({ item }) {
               <ListItemIcon>
                 <EditIcon fontSize="small" />
               </ListItemIcon>
-              Add to calendar
+              {t('addToCalendar')}
             </MenuItem>
             <MenuItem
               onClick={() => {
@@ -221,7 +216,7 @@ function PeriodicItem({ item }) {
               <ListItemIcon>
                 <EventAvailableIcon fontSize="small" />
               </ListItemIcon>
-              Edit
+              {t('common.edit')}
             </MenuItem>
             <MenuItem
               onClick={() => {
@@ -232,7 +227,7 @@ function PeriodicItem({ item }) {
               <ListItemIcon>
                 <DeleteIcon fontSize="small" />
               </ListItemIcon>
-              Delete
+              {t('common.delete')}
             </MenuItem>
           </Menu>
         </TableCell>
@@ -260,10 +255,10 @@ function PeriodicItem({ item }) {
   );
 }
 
-function parsePeriod(periodText) {
-  const ALL_DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  const WEEKDAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-  const WEEKENDS = ['Saturday', 'Sunday'];
+function parsePeriod(periodText, t) {
+  const ALL_DAYS = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+  const WEEKDAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+  const WEEKENDS = ['saturday', 'sunday'];
 
   const periodsParts = periodText.split(/[\s,]+/); // split by comma or space
   const dayIndices = periodsParts
@@ -273,44 +268,43 @@ function parsePeriod(periodText) {
   const periodsSet = new Set(periodsParts);
 
   if (ALL_DAYS.every((d) => periodsSet.has(d)))
-    return { type: 'daily', dayIndices: [], label: 'Daily' };
+    return { type: 'daily', dayIndices: [], label: t('periodicChip.daily') };
 
   let label = [...periodsParts];
   if (WEEKDAYS.every((d) => periodsSet.has(d))) {
     label = label.filter((d) => !WEEKDAYS.includes(d));
-    label.push('Weekdays');
+    label.push('weekdays');
   }
   if (WEEKENDS.every((d) => periodsSet.has(d))) {
     label = label.filter((d) => !WEEKENDS.includes(d));
-    label.push('Weekends');
+    label.push('weekends');
   }
+  label = label.map((d) => t(`days.${d}`));
 
   if (dayIndices.length > 0) return { type: 'weekly', dayIndices, label: label.join(', ') };
   return { type: 'unknown' };
 }
 
-PeriodicChip.propTypes = {
-  period: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]).isRequired,
-};
 function PeriodicChip({ period }) {
+  const { t } = useTranslation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const parsed = parsePeriod(period);
+  const parsed = parsePeriod(period, t);
   const todayIndex = new Date().getDay();
   const isToday =
     parsed.type === 'daily' || (parsed.type === 'weekly' && parsed.dayIndices.includes(todayIndex));
 
   let label;
   if (parsed.type === 'daily') {
-    label = 'Daily';
+    label = t('periodicChip.daily');
   } else if (parsed.type === 'weekly') {
     label = isMobile
       ? period
           .split(', ')
-          .map((day) => day.slice(0, 2))
+          .map((day) => t(`days.${day}Abr`))
           .join(', ')
-      : `Every ${parsed.label}`;
+      : t('periodicChip.every', { label: parsed.label });
   } else {
     label = period;
   }
@@ -325,28 +319,16 @@ function PeriodicChip({ period }) {
   );
 }
 
-PeriodicDialog.propTypes = {
-  open: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
-  onSubmit: PropTypes.func.isRequired,
-  initialData: PropTypes.shape({
-    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    name: PropTypes.string,
-    period: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
-    description: PropTypes.string,
-  }),
-  mode: PropTypes.oneOf(['add', 'edit']),
-};
-
 function PeriodicDialog({ open, onClose, onSubmit, initialData = {}, mode = 'add' }) {
+  const { t } = useTranslation();
   const weekdayOptions = [
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-    'Sunday',
+    'monday',
+    'tuesday',
+    'wednesday',
+    'thursday',
+    'friday',
+    'saturday',
+    'sunday',
   ];
 
   const [title, setTitle] = useState(initialData.name || '');
@@ -406,35 +388,39 @@ function PeriodicDialog({ open, onClose, onSubmit, initialData = {}, mode = 'add
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <form onSubmit={handleSubmit}>
-        <DialogTitle>{mode === 'add' ? 'Add Periodic To-Do' : 'Edit Periodic To-Do'}</DialogTitle>
+        <DialogTitle>
+          {mode === 'add' ? t('periodicDialog.addTitle') : t('periodicDialog.editTitle')}
+        </DialogTitle>
         <DialogContent dividers sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 2 }}>
           <TextField
             required
-            label="Title"
+            label={t('periodicDialog.fields.title')}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             fullWidth
           />
           <FormControl fullWidth variant="standard">
-            <InputLabel id={`period-label-${initialData?.id || 'new'}`}>Period</InputLabel>
+            <InputLabel id={`period-label-${initialData?.id || 'new'}`}>
+              {t('periodicDialog.fields.period')}
+            </InputLabel>
             <Select
               labelId={`period-label-${initialData?.id || 'new'}`}
               multiple
               value={periods}
-              renderValue={(selected) => parsePeriod(selected.join(', ')).label}
+              renderValue={(selected) => parsePeriod(selected.join(', '), t).label}
               variant="standard"
             >
               {weekdayOptions.map((day) => (
                 <MenuItem key={day} value={day} onClick={() => handleToggle(day)}>
                   <Checkbox checked={periods.includes(day)} />
-                  <ListItemText primary={day} />
+                  <ListItemText primary={t(`days.${day}`)} />
                 </MenuItem>
               ))}
             </Select>
-            <FormHelperText>Select one or more days for this periodic task</FormHelperText>
+            <FormHelperText>{t('periodicDialog.helper')}</FormHelperText>
           </FormControl>
           <TextField
-            label="Description"
+            label={t('description')}
             multiline
             minRows={3}
             value={description}
@@ -443,9 +429,9 @@ function PeriodicDialog({ open, onClose, onSubmit, initialData = {}, mode = 'add
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose}>Cancel</Button>
+          <Button onClick={onClose}>{t('common.cancel')}</Button>
           <Button type="submit" variant="contained">
-            {mode === 'add' ? 'Add' : 'Save'}
+            {mode === 'add' ? t('common.add') : t('common.save')}
           </Button>
         </DialogActions>
       </form>
@@ -454,6 +440,7 @@ function PeriodicDialog({ open, onClose, onSubmit, initialData = {}, mode = 'add
 }
 
 function AddPeriodicTodo() {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
 
   const handleAdd = (newItem) => {
@@ -469,19 +456,13 @@ function AddPeriodicTodo() {
         onClick={() => setOpen(true)}
         sx={{ mb: 2 }}
       >
-        Add Periodic
+        {t('addPeriodic')}
       </Button>
 
       <PeriodicDialog open={open} onClose={() => setOpen(false)} onSubmit={handleAdd} mode="add" />
     </>
   );
 }
-
-EditPeriodicDialog.propTypes = {
-  open: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
-  initialData: PropTypes.object,
-};
 
 function EditPeriodicDialog({ open, onClose, initialData }) {
   const handleEdit = (updatedItem) => {
@@ -504,13 +485,9 @@ function EditPeriodicDialog({ open, onClose, initialData }) {
   );
 }
 
-ConfirmDeletePeriodicDialog.propTypes = {
-  open: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
-  onConfirm: PropTypes.func.isRequired,
-};
-
 function ConfirmDeletePeriodicDialog({ open, onClose, onConfirm }) {
+  const { t } = useTranslation();
+
   function handleRemove() {
     onClose();
     onConfirm();
@@ -518,14 +495,14 @@ function ConfirmDeletePeriodicDialog({ open, onClose, onConfirm }) {
 
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Confirm Deletion</DialogTitle>
+      <DialogTitle>{t('confirmDeletePeriodic.title')}</DialogTitle>
       <DialogContent>
-        <Typography>Are you sure you want to delete this periodic to-do item?</Typography>
+        <Typography>{t('confirmDeletePeriodic.message')}</Typography>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={onClose}>{t('common.cancel')}</Button>
         <Button onClick={handleRemove} color="error" variant="contained">
-          Delete
+          {t('common.delete')}
         </Button>
       </DialogActions>
     </Dialog>
