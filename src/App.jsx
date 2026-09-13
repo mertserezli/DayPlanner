@@ -124,17 +124,18 @@ function DayPlanner() {
       ) : (
         <Grid container spacing={2} sx={{ px: 2, pb: 2 }}>
           <Grid item xs={12} md={4}>
-            <Paper
-              elevation={3}
-              sx={{ p: 2, borderRadius: 2, backgroundColor: 'background.paper' }}
-            >
-              <Calendar />
-            </Paper>
+            <Calendar />
           </Grid>
           <Grid item xs={12} md={4}>
             <Paper
               elevation={3}
-              sx={{ p: 2, borderRadius: 2, backgroundColor: 'background.paper' }}
+              sx={{
+                p: 2,
+                borderRadius: 2,
+                backgroundColor: 'background.paper',
+                height: { xs: 'auto', md: 'calc(100vh - 84px)' },
+                overflow: 'auto',
+              }}
             >
               {renderTodoSection()}
             </Paper>
@@ -142,7 +143,13 @@ function DayPlanner() {
           <Grid item xs={12} md={4}>
             <Paper
               elevation={3}
-              sx={{ p: 2, borderRadius: 2, backgroundColor: 'background.paper' }}
+              sx={{
+                p: 2,
+                borderRadius: 2,
+                backgroundColor: 'background.paper',
+                height: { xs: 'auto', md: 'calc(100vh - 84px)' },
+                overflow: 'auto',
+              }}
             >
               <PeriodicTodoList />
             </Paper>
