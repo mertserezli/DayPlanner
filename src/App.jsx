@@ -22,7 +22,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 
 import { useCollection } from 'react-firebase-hooks/firestore';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import SwipeableViews from 'react-swipeable-views';
+import SwipeableViews from './SwipeableViews';
 import HeaderBar from './HeaderBar';
 import Profile from './Profile';
 import NotFound from './NotFound';
